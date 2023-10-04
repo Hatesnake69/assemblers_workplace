@@ -1,12 +1,15 @@
 import datetime
 import json
 
+import requests
+
 from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel
 from app.schemas.order_schemas import (
     OrdersResponseFromWb,
     MappingResponse,
     ProductParamsFromMs,
-    ms_param_map, WbOrderStickersResponse,
+    ms_param_map,
+    WbOrderStickersResponse,
 )
 from app.services.api_request_service import RequestAPI
 from assemblers_workplace.settings import settings
@@ -20,16 +23,17 @@ class WbOrdersService:
         self.request_api = RequestAPI()
 
     def create_new_supply(self, name: str, task: TaskModel) -> WbSupplyModel:
-        new_supply_resp = self.request_api.post(
-            url=settings.post_wb_new_supply_url,
-            params={},
-            headers={
-                "Content-Type": "application/json",
-                "charset": "UTF-8",
-                "Authorization": f"Bearer {self.wb_token}",
-            },
-            body={"name": name},
-        ).json()
+        # new_supply_resp = self.request_api.post(
+        #     url=settings.post_wb_new_supply_url,
+        #     params={},
+        #     headers={
+        #         "Content-Type": "application/json",
+        #         "charset": "UTF-8",
+        #         "Authorization": f"Bearer {self.wb_token}",
+        #     },
+        #     body={"name": name},
+        # ).json()
+        new_supply_resp = {"id": "WB-GI-1234567"}
         new_supply = WbSupplyModel.objects.create(
             task=task,
             wb_id=new_supply_resp.get("id"),
@@ -38,17 +42,61 @@ class WbOrdersService:
         return new_supply
 
     def get_new_orders(self, supply: WbSupplyModel) -> list[WbOrderModel]:
-        response_from_wb = self.request_api.get(
-            url=settings.get_wb_new_orders_url,
-            headers={
-                "Content-Type": "application/json",
-                "charset": "UTF-8",
-                "Authorization": f"Bearer {self.wb_token}",
-            },
-            params={},
-        ).json()
+        # response_from_wb = self.request_api.get(
+        #     url=settings.get_wb_new_orders_url,
+        #     headers={
+        #         "Content-Type": "application/json",
+        #         "charset": "UTF-8",
+        #         "Authorization": f"Bearer {self.wb_token}",
+        #     },
+        #     params={},
+        # ).json()
+        response_from_wb = {
+            "orders": [
+                {
+                    "address": None,
+                    "deliveryType": "fbs",
+                    "user": None,
+                    "orderUid": "i8a7af6988c5000aecac89a0cd8166a92",
+                    "article": "Thuya_Краска_для_бровей_ресниц_14мл_Молочный_шоколад_11150040_1_ОДНА_ШТ",
+                    "rid": "10.i8a7af6988c5000aecac89a0cd8166a92.0.0",
+                    "createdAt": "2023-09-18T12:20:24Z",
+                    "offices": ["Москва_Запад-Юг"],
+                    "skus": ["8412751100403"],
+                    "id": 1064818702,
+                    "warehouseId": 7364583,
+                    "nmId": 120685149,
+                    "chrtId": 213431676,
+                    "price": 2737,
+                    "convertedPrice": 81118,
+                    "currencyCode": 933,
+                    "convertedCurrencyCode": 643,
+                    "isLargeCargo": False,
+                },
+                {
+                    "address": None,
+                    "deliveryType": "fbs",
+                    "user": None,
+                    "orderUid": "ia0546f91913f2e68e948a1667397d50c",
+                    "article": "Thuya_Краска_для_бровей_ресниц_14мл_светл-коричнев_11102040_1_ОДНА_ШТУКА",
+                    "rid": "10.ia0546f91913f2e68e948a1667397d50c.0.0",
+                    "createdAt": "2023-09-18T12:20:55Z",
+                    "offices": ["Москва_Запад-Юг"],
+                    "skus": ["8412751120401"],
+                    "id": 1064819771,
+                    "warehouseId": 7364583,
+                    "nmId": 100172545,
+                    "chrtId": 157926960,
+                    "price": 2648,
+                    "convertedPrice": 78480,
+                    "currencyCode": 933,
+                    "convertedCurrencyCode": 643,
+                    "isLargeCargo": False,
+                },
+            ]
+        }
 
-        orders_from_wb_resp = OrdersResponseFromWb.parse_obj(response_from_wb.json())
+        orders_from_wb_resp = OrdersResponseFromWb.parse_obj(response_from_wb)
         orders_from_wb_resp = filter_by_warehouse(
             chunk_of_orders=orders_from_wb_resp, wb_warehouse_id=self.warehouse_id
         )
@@ -62,72 +110,93 @@ class WbOrdersService:
         for order in orders_from_wb_resp.orders:
             resp_from_mapping = self.request_api.get(
                 url=settings.get_mapping_url,
-                params={"nm_id": 159283126},
+                params={"nm_id": order.nmId},
                 headers={},
             )
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping.json()[0])
-            self.request_api.patch(
-                url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
-                headers={
-                    "Content-Type": "application/json",
-                    "charset": "UTF-8",
-                    "Authorization": f"Bearer {self.wb_token}",
-                },
-                params={},
-                body={}
-            )
-            new_order = WbOrderModel.objects.create(
-                supply=supply,
-                wb_id=order.id,
-                wb_rid=order.rid,
-                wb_created_at=order.createdAt,
-                wb_warehouse_id=order.warehouseId,
-                wb_supply_id=None,
-                wb_offices=order.offices,
-                wb_address=order.address,
-                wb_user=order.user,
-                wb_skus=order.skus,
-                wb_price=order.price,
-                wb_converted_price=order.convertedPrice,
-                wb_currency_code=order.currencyCode,
-                wb_converted_currency_code=order.convertedCurrencyCode,
-                wb_order_uid=order.orderUid,
-                wb_delivery_type=order.deliveryType,
-                wb_nm_id=order.nmId,
-                wb_chrt_id=order.chrtId,
-                wb_article=order.article,
-                wb_is_large_cargo=order.isLargeCargo,
-            )
-            new_orders.append(new_order)
-
-            if info_from_mapping.consist:
-                consists_dict = json.loads(info_from_mapping.consist)
-                for ms_id in consists_dict:
-                    order_product_quantity = int(consists_dict.get(ms_id))
-                    self.create_product_order(
-                        ms_id, order_product_quantity, new_order
-                    )
-            else:
-                ms_id = info_from_mapping.ms_id,
-                order_product_quantity = 1
-                self.create_product_order(
-                    ms_id, order_product_quantity, new_order
+            # patch_req = self.request_api.patch(
+            #     url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
+            #     headers={
+            #         "Content-Type": "application/json",
+            #         "charset": "UTF-8",
+            #         "Authorization": f"Bearer {self.wb_token}",
+            #     },
+            #     params={},
+            #     body={},
+            # )
+            patch_req = requests.Request
+            patch_req.ok = True
+            if patch_req.ok:
+                new_order = WbOrderModel.objects.create(
+                    supply=supply,
+                    wb_id=order.id,
+                    wb_rid=order.rid,
+                    wb_created_at=order.createdAt,
+                    wb_warehouse_id=order.warehouseId,
+                    wb_supply_id=None,
+                    wb_offices=order.offices,
+                    wb_address=order.address,
+                    wb_user=order.user,
+                    wb_skus=order.skus,
+                    wb_price=order.price,
+                    wb_converted_price=order.convertedPrice,
+                    wb_currency_code=order.currencyCode,
+                    wb_converted_currency_code=order.convertedCurrencyCode,
+                    wb_order_uid=order.orderUid,
+                    wb_delivery_type=order.deliveryType,
+                    wb_nm_id=order.nmId,
+                    wb_chrt_id=order.chrtId,
+                    wb_article=order.article,
+                    wb_is_large_cargo=order.isLargeCargo,
                 )
+                new_orders.append(new_order)
+
+                if info_from_mapping.consist:
+                    consists_dict = json.loads(info_from_mapping.consist)
+                    for ms_id in consists_dict:
+                        order_product_quantity = int(consists_dict.get(ms_id))
+                        self.create_product_order(
+                            ms_id, order_product_quantity, new_order
+                        )
+                else:
+                    ms_id = (info_from_mapping.ms_id,)
+                    order_product_quantity = 1
+                    self.create_product_order(ms_id, order_product_quantity, new_order)
 
         return new_orders
 
     def get_order_stickers(self, orders: list[WbOrderModel]):
-        response = self.request_api.post(
-            url="https://suppliers-api.wildberries.ru/api/v3/orders/stickers",
-            headers={
-                "Content-Type": "application/json",
-                "charset": "UTF-8",
-                "Authorization": f"Bearer {self.wb_token}",
-            },
-            body={"orders": [elem.wb_id for elem in orders]},
-            params={}
-        )
-        wb_stickers = WbOrderStickersResponse(**response.json())
+        # response = self.request_api.post(
+        #     url="https://suppliers-api.wildberries.ru/api/v3/orders/stickers",
+        #     headers={
+        #         "Content-Type": "application/json",
+        #         "charset": "UTF-8",
+        #         "Authorization": f"Bearer {self.wb_token}",
+        #     },
+        #     body={"orders": [elem.wb_id for elem in orders]},
+        #     params={},
+        # ).json()
+
+        response = {
+            "stickers": [
+                {
+                    "orderId": 1064818702,
+                    "partA": 231648,
+                    "partB": 9753,
+                    "barcode": "!uKEtQZVx",
+                    "file": "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjwhLS0gR2VuZXJhdGVkIGJ5IFNWR28gLS0+Cjxzdmcgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiCiAgICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjQwMCIgaGVpZQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzE4IiB5PSIyMCIgd2lkdGg9IjYiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzI2IiB5PSIyMCIgd2lkdGg9IjIiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzMwIiB5PSIyMCIgd2lkdGg9IjQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMjAiIHk9IjIwMCIgd2lkdGg9IjM1MCIgaGVpZ2h0PSI5MCIgc3R5bGU9ImZpbGw6YmxhY2siIC8+Cjx0ZXh0IHg9IjMwIiB5PSIyNDAiIHN0eWxlPSJmaWxsOndoaXRlO2ZvbnQtc2l6ZTozMHB0O3RleHQtYW5jaG9yOnN0YXJ0IiA+MjMxNjQ4PC90ZXh0Pgo8dGV4dCB4PSIzNTAiIHk9IjI3MCIgc3R5bGU9ImZpbGw6d2hpdGU7Zm9udC1zaXplOjUwcHQ7dGV4dC1hbmNob3I6ZW5kIiA+OTc1MzwvdGV4dD4KPC9zdmc+Cg==",
+                },
+                {
+                    "orderId": 1064819771,
+                    "partA": 231648,
+                    "partB": 9753,
+                    "barcode": "!uKEtQZVx",
+                    "file": "PD94bWwgdmVyc2lvbj0iMS4wIj8+CjwhLS0gR2VuZXJhdGVkIGJ5IFNWR28gLS0+Cjxzdmcgd2lkdGg9IjQwMCIgaGVpZ2h0PSIzMDAiCiAgICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICAgIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4KPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjQwMCIgaGVpZQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzE4IiB5PSIyMCIgd2lkdGg9IjYiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzI2IiB5PSIyMCIgd2lkdGg9IjIiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMzMwIiB5PSIyMCIgd2lkdGg9IjQiIGhlaWdodD0iMTcwIiBzdHlsZT0iZmlsbDpibGFjayIgLz4KPHJlY3QgeD0iMjAiIHk9IjIwMCIgd2lkdGg9IjM1MCIgaGVpZ2h0PSI5MCIgc3R5bGU9ImZpbGw6YmxhY2siIC8+Cjx0ZXh0IHg9IjMwIiB5PSIyNDAiIHN0eWxlPSJmaWxsOndoaXRlO2ZvbnQtc2l6ZTozMHB0O3RleHQtYW5jaG9yOnN0YXJ0IiA+MjMxNjQ4PC90ZXh0Pgo8dGV4dCB4PSIzNTAiIHk9IjI3MCIgc3R5bGU9ImZpbGw6d2hpdGU7Zm9udC1zaXplOjUwcHQ7dGV4dC1hbmNob3I6ZW5kIiA+OTc1MzwvdGV4dD4KPC9zdmc+Cg==",
+                },
+            ]
+        }
+
+        wb_stickers = WbOrderStickersResponse(**response)
         for elem in orders:
             for wb_elem in wb_stickers.stickers:
                 if wb_elem.orderId == elem.wb_id:
@@ -138,34 +207,40 @@ class WbOrdersService:
                     elem.save()
 
     def send_supply_to_deliver(self, supply: WbSupplyModel):
-        self.request_api.patch(
-            url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/deliver",
-            headers={
-                "Content-Type": "application/json",
-                "charset": "UTF-8",
-                "Authorization": f"Bearer {self.wb_token}",
-            },
-            params={},
-            body={}
-        )
+        # resp = self.request_api.patch(
+        #     url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/deliver",
+        #     headers={
+        #         "Content-Type": "application/json",
+        #         "charset": "UTF-8",
+        #         "Authorization": f"Bearer {self.wb_token}",
+        #     },
+        #     params={},
+        #     body={},
+        # )
+        resp = requests.Request
+        resp.ok = True
+        if not resp.ok:
+            raise Exception("supply patch failed")
 
     def get_supply_sticker(self, supply: WbSupplyModel):
-        supply_sticker_response = self.request_api.get(
-            url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/barcode?type=svg",
-            headers={
-                "Content-Type": "application/json",
-                "charset": "UTF-8",
-                "Authorization": f"Bearer {self.wb_token}",
-            },
-            params={},
-        )
-        supply.svg_file = supply_sticker_response.json().get("file")
+        # supply_sticker_response = self.request_api.get(
+        #     url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/barcode?type=svg",
+        #     headers={
+        #         "Content-Type": "application/json",
+        #         "charset": "UTF-8",
+        #         "Authorization": f"Bearer {self.wb_token}",
+        #     },
+        #     params={},
+        # ).json()
+        supply_sticker_response = {
+            "barcode": "WB-GI-1234567",
+            "file": "U3dhZ2dlciByb2Nrcw==",
+        }
+        supply.svg_file = supply_sticker_response.get("file")
         supply.save()
 
-
-
     def create_product_order(self, ms_id, order_product_quantity, new_order) -> None:
-        order_product_ms_id = ms_id
+        order_product_ms_id = ms_id[0]
         resp_from_ms = self.request_api.get(
             url=f"{settings.get_product_info_url}/{order_product_ms_id}",
             headers={
@@ -175,14 +250,12 @@ class WbOrdersService:
             },
             params={},
         )
-        product_params = get_product_params(
-            product_from_ms=resp_from_ms.json()
-        )
+        product_params = get_product_params(product_from_ms=resp_from_ms.json())
         WbOrderProductModel.objects.create(
             order=new_order,
             name=product_params.name,
             quantity=order_product_quantity,
-            barcode=str(product_params.barcode),
+            barcode=str(product_params.barcodes),
             photo=None,
             packaging_class=product_params.packaging_class,
             code=product_params.code,
@@ -250,4 +323,3 @@ def get_product_params(product_from_ms: dict) -> ProductParamsFromMs:
         packaging_class=packaging_class,
         warehouse_place=warehouse_place,
     )
-

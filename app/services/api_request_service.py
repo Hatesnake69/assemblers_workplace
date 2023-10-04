@@ -14,7 +14,7 @@ class RequestAPI:
                 return response
             counter -= 1
             time.sleep(0.5)
-        raise Exception("website is not responding well")
+        raise Exception(f"{response.text}")
 
     def post(self, url: str, headers: dict, params: dict, body: dict, retries: int = 3):
         counter = retries
@@ -27,11 +27,15 @@ class RequestAPI:
             time.sleep(0.5)
         raise Exception("website is not responding well")
 
-    def patch(self, url: str, headers: dict, params: dict, body: dict, retries: int = 3):
+    def patch(
+        self, url: str, headers: dict, params: dict, body: dict, retries: int = 3
+    ):
         counter = retries
         while counter > 0:
             print(f"making post request to url: {url}")
-            response = requests.patch(url=url, headers=headers, params=params, json=body)
+            response = requests.patch(
+                url=url, headers=headers, params=params, json=body
+            )
             if response.ok:
                 return response
             counter -= 1

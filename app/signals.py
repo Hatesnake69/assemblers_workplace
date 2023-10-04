@@ -4,9 +4,11 @@ from django.dispatch import receiver
 
 from assemblers_workplace.settings import settings
 from .models import TaskModel, WbSupplyModel, WbOrderModel
+from .models.tasks import Status
 from .models.wb_account_warehouses import WbAccountWarehouseModel
 from .services.api_request_service import RequestAPI
 from .services.wb_orders_service import WbOrdersService
+from .utils.disable_signals import DisableSignals
 
 
 @receiver(post_save, sender=TaskModel)
@@ -23,28 +25,49 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
     wb_order_service = WbOrdersService(
         wb_token=wb_token, amount=amount, warehouse_id=account_warehouse.wb_id
     )
-    if instance.task_state == "NEW":
-        pass
-    elif instance.task_state == "CREATE_SUPPLY":
-        supply_name = f"{instance.employee} {instance.created_at.strftime('%Y-%m-%d %H:%M')}"
-        new_supply = wb_order_service.create_new_supply(
-            name=supply_name, task=instance
+    if instance.task_state == Status.NEW.value:
+        supply_name = (
+            f"{instance.employee} {instance.created_at.strftime('%Y-%m-%d %H:%M')}"
         )
-    elif instance.task_state == "ADD_ORDERS":
+        new_supply = wb_order_service.create_new_supply(name=supply_name, task=instance)
+        print("new_supply")
+        with DisableSignals():
+            instance.task_state = Status.CREATE_SUPPLY
+            instance.save()
+
+    elif instance.task_state == Status.CREATE_SUPPLY.value:
         supply = WbSupplyModel.objects.get(task=instance)
         new_orders = wb_order_service.get_new_orders(supply=supply)
-    elif instance.task_state == "GET_ORDERS_STICKERS":
+        print("new_orders")
+        with DisableSignals():
+            instance.task_state = Status.ADD_ORDERS
+            instance.save()
+    elif instance.task_state == Status.ADD_ORDERS.value:
         supply = WbSupplyModel.objects.get(task=instance)
-        new_orders = [
-            order for order in WbOrderModel.objects.filter(supply=supply)
-        ]
+        new_orders = [order for order in WbOrderModel.objects.filter(supply=supply)]
         wb_order_service.get_order_stickers(orders=new_orders)
-    elif instance.task_state == "SEND_SUPPLY_TO_DELIVER":
+        print("orders_added to supply")
+        with DisableSignals():
+            instance.task_state = Status.GET_ORDERS_STICKERS
+            instance.save()
+    elif instance.task_state == Status.GET_ORDERS_STICKERS.value:
         supply = WbSupplyModel.objects.get(task=instance)
         wb_order_service.send_supply_to_deliver(supply=supply)
-    elif instance.task_state == "GET_SUPPLY_STICKER":
+        print("orders stickers received")
+        with DisableSignals():
+            instance.task_state = Status.SEND_SUPPLY_TO_DELIVER
+            instance.save()
+    elif instance.task_state == Status.SEND_SUPPLY_TO_DELIVER.value:
         supply = WbSupplyModel.objects.get(task=instance)
         wb_order_service.get_supply_sticker(supply=supply)
-    elif instance.task_state == "CLOSE":
-        instance.is_active = False
-        instance.save()
+        print("supply sent")
+
+        with DisableSignals():
+            instance.task_state = Status.GET_SUPPLY_STICKER
+            instance.save()
+    elif instance.task_state == Status.GET_SUPPLY_STICKER.value:
+        print("task closed")
+        with DisableSignals():
+            instance.task_state = Status.CLOSE
+            instance.is_active = False
+            instance.save()
