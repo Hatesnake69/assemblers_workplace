@@ -121,8 +121,6 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-load_dotenv()
-
 
 class Settings:
     user: str = os.getenv("POSTGRES_USER")
