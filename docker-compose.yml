@@ -15,6 +15,18 @@ services:
       my_api_network:
 
 
+  django_app:
+    container_name: django_app
+    build: ./
+    command: sh -c "python manage.py migrate && python manage.py runserver"
+    volumes:
+      - ./:/usr/src/app/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      my_api_network:
+
+
 networks:
   my_api_network:
     driver: bridge
