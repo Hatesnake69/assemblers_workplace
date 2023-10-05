@@ -71,3 +71,4 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             instance.task_state = Status.CLOSE
             instance.is_active = False
             instance.save()
+
