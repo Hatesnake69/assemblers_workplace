@@ -1,12 +1,9 @@
 from django.db.models.signals import post_save, pre_save
-from django.contrib.auth.models import User
 from django.dispatch import receiver
 
-from assemblers_workplace.settings import settings
 from .models import TaskModel, WbSupplyModel, WbOrderModel
 from .models.tasks import Status
 from .models.wb_account_warehouses import WbAccountWarehouseModel
-from .services.api_request_service import RequestAPI
 from .services.wb_orders_service import WbOrdersService
 from .utils.disable_signals import DisableSignals
 
@@ -71,4 +68,3 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             instance.task_state = Status.CLOSE
             instance.is_active = False
             instance.save()
-

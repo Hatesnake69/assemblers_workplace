@@ -1,24 +1,104 @@
+import nested_admin
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import path
 
-from .forms import MyCustomForm
 from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
-from django import forms
 
 
-class WbOrderInline(admin.TabularInline):
-    model = WbOrderModel
+class WbOrderProductInline(nested_admin.NestedTabularInline):
+    model = WbOrderProductModel
+    readonly_fields = (
+        "name",
+        "quantity",
+        "barcode",
+        "photo",
+        "packaging_class",
+        "code",
+        "storage_location",
+    )
     extra = 0  # Это опционально, задает начальное количество отображаемых заказов
 
+    # exclude = [
+    #     "wb_done",
+    #     "created_at",
+    #     "closed_at",
+    #     "deleted_at",
+    #     "wb_orders",
+    # ]
 
 
-class WbSupplyInline(admin.TabularInline):
+class WbOrderInline(nested_admin.NestedTabularInline):
+    model = WbOrderModel
+    extra = 0  # Это опционально, задает начальное количество отображаемых заказов
+    readonly_fields = (
+        "order_products",
+        "wb_id" ,
+        "wb_rid" ,
+        "wb_created_at" ,
+        "wb_warehouse_id" ,
+        "wb_supply_id" ,
+        "wb_offices" ,
+        "wb_address" ,
+        "wb_user" ,
+        "wb_skus" ,
+        "wb_price",
+        "wb_converted_price" ,
+        "wb_currency_code",
+        "wb_converted_currency_code" ,
+        "wb_order_uid" ,
+        "wb_delivery_type",
+        "wb_nm_id" ,
+        "wb_chrt_id" ,
+        "wb_article",
+        "wb_is_large_cargo",
+        "partA",
+        "partB",
+        "barcode",
+        "svg_file",
+    )
+    exclude = [
+        "order_products",
+        "wb_rid",
+        "wb_created_at",
+        "wb_warehouse_id",
+        "wb_supply_id",
+        "wb_offices",
+        "wb_address",
+        "wb_user",
+        "wb_currency_code",
+        "wb_converted_currency_code",
+        "wb_order_uid",
+        "wb_delivery_type",
+        "wb_nm_id",
+        "wb_chrt_id",
+        "wb_article",
+        "wb_is_large_cargo",
+        "partA",
+        "partB",
+    ]
+    inlines = [WbOrderProductInline]
+
+
+class WbSupplyInline(nested_admin.NestedTabularInline):
     model = WbSupplyModel
-    readonly_fields = ('wb_id', 'wb_name', 'wb_done', 'created_at', 'closed_at', 'deleted_at', 'svg_file', 'wb_orders')
+    readonly_fields = (
+        "wb_id",
+        "wb_name",
+        "wb_done",
+        "created_at",
+        "closed_at",
+        "deleted_at",
+        "svg_file",
+        "wb_orders",
+    )
     max_num = 1
     inlines = [WbOrderInline]
+    exclude = [
+        "wb_done",
+        "created_at",
+        "closed_at",
+        "deleted_at",
+        "wb_orders",
+    ]
 
     # Customize save behavior if needed
     # def save_model(self, request, obj, form, change):
@@ -27,9 +107,15 @@ class WbSupplyInline(admin.TabularInline):
 
 
 @admin.register(TaskModel)
-class TaskModelAdmin(admin.ModelAdmin):
-
-    list_display = ('employee', 'amount', 'business_account', 'warehouse', 'task_state', 'is_active')
+class TaskModelAdmin(nested_admin.NestedModelAdmin):
+    list_display = (
+        "employee",
+        "amount",
+        "business_account",
+        "warehouse",
+        "task_state",
+        "is_active",
+    )
     inlines = [WbSupplyInline]
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
@@ -65,16 +151,25 @@ class TaskModelAdmin(admin.ModelAdmin):
     #     ('Timestamps', {'fields': ('wb_id', 'wb_name', 'wb_done', 'created_at', 'closed_at', 'deleted_at'), 'classes': ('collapse',)}),
     # )
 
+
 @admin.register(WbOrderModel)
 class WbOrderModelAdmin(admin.ModelAdmin):
-    list_display = ('wb_id', 'wb_rid', 'wb_created_at', 'wb_price', 'svg_file')
+    list_display = ("wb_id", "wb_rid", "wb_created_at", "wb_price", "svg_file")
 
 
 @admin.register(WbOrderProductModel)
 class WbOrderProductModelAdmin(admin.ModelAdmin):
-    list_display = ('name', 'quantity', 'barcode', 'code')
+    list_display = ("name", "quantity", "barcode", "code")
 
 
 @admin.register(WbSupplyModel)
 class WbSupplyModelAdmin(admin.ModelAdmin):
-    list_display = ('wb_id', 'wb_name', 'wb_done', 'created_at', 'closed_at', 'deleted_at', 'svg_file')
+    list_display = (
+        "wb_id",
+        "wb_name",
+        "wb_done",
+        "created_at",
+        "closed_at",
+        "deleted_at",
+        "svg_file",
+    )

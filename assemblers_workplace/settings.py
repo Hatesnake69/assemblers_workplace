@@ -31,8 +31,7 @@ SECRET_KEY = "django-insecure-3#sh#qmzp%!!s14411f4hjz82o&p!@=y-j^ph#)8ppc=o=atja
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(',')
-
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "nested_admin",
     "app",
 ]
 
@@ -62,7 +62,7 @@ ROOT_URLCONF = "assemblers_workplace.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
+        "DIRS": [os.path.join(BASE_DIR, "templates/")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -162,4 +162,4 @@ DATABASES = {
 }
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
