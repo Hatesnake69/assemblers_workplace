@@ -1,10 +1,10 @@
-import nested_admin
 from django.contrib import admin
+from nested_admin.nested import NestedModelAdmin, NestedTabularInline
 
 from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
 
 
-class WbOrderProductInline(nested_admin.NestedTabularInline):
+class WbOrderProductInline(NestedTabularInline):
     model = WbOrderProductModel
     readonly_fields = (
         "name",
@@ -15,48 +15,16 @@ class WbOrderProductInline(nested_admin.NestedTabularInline):
         "code",
         "storage_location",
     )
-    extra = 0  # Это опционально, задает начальное количество отображаемых заказов
-
-    # exclude = [
-    #     "wb_done",
-    #     "created_at",
-    #     "closed_at",
-    #     "deleted_at",
-    #     "wb_orders",
-    # ]
+    max_num = 0
+    extra = 0
 
 
-class WbOrderInline(nested_admin.NestedTabularInline):
+class WbOrderInline(NestedTabularInline):
     model = WbOrderModel
-    extra = 0  # Это опционально, задает начальное количество отображаемых заказов
+    extra = 0
     readonly_fields = (
         "order_products",
-        "wb_id" ,
-        "wb_rid" ,
-        "wb_created_at" ,
-        "wb_warehouse_id" ,
-        "wb_supply_id" ,
-        "wb_offices" ,
-        "wb_address" ,
-        "wb_user" ,
-        "wb_skus" ,
-        "wb_price",
-        "wb_converted_price" ,
-        "wb_currency_code",
-        "wb_converted_currency_code" ,
-        "wb_order_uid" ,
-        "wb_delivery_type",
-        "wb_nm_id" ,
-        "wb_chrt_id" ,
-        "wb_article",
-        "wb_is_large_cargo",
-        "partA",
-        "partB",
-        "barcode",
-        "svg_file",
-    )
-    exclude = [
-        "order_products",
+        "wb_id",
         "wb_rid",
         "wb_created_at",
         "wb_warehouse_id",
@@ -64,6 +32,9 @@ class WbOrderInline(nested_admin.NestedTabularInline):
         "wb_offices",
         "wb_address",
         "wb_user",
+        "wb_skus",
+        "wb_price",
+        "wb_converted_price",
         "wb_currency_code",
         "wb_converted_currency_code",
         "wb_order_uid",
@@ -74,11 +45,22 @@ class WbOrderInline(nested_admin.NestedTabularInline):
         "wb_is_large_cargo",
         "partA",
         "partB",
-    ]
+        "barcode",
+        "svg_file",
+    )
+    fields = (
+        "wb_id",
+        "wb_article",
+        "wb_rid",
+        "wb_skus",
+        "wb_price",
+        "svg_file",
+    )
+    max_num = 0
     inlines = [WbOrderProductInline]
 
 
-class WbSupplyInline(nested_admin.NestedTabularInline):
+class WbSupplyInline(NestedTabularInline):
     model = WbSupplyModel
     readonly_fields = (
         "wb_id",
@@ -90,25 +72,26 @@ class WbSupplyInline(nested_admin.NestedTabularInline):
         "svg_file",
         "wb_orders",
     )
-    max_num = 1
+    max_num = 0
     inlines = [WbOrderInline]
-    exclude = [
-        "wb_done",
-        "created_at",
-        "closed_at",
-        "deleted_at",
-        "wb_orders",
-    ]
-
-    # Customize save behavior if needed
-    # def save_model(self, request, obj, form, change):
-    #     # Custom logic here
-    #     super().save_model(request, obj, form, change)
+    fields = (
+        "wb_id",
+        "wb_name",
+        "svg_file",
+    )
 
 
 @admin.register(TaskModel)
-class TaskModelAdmin(nested_admin.NestedModelAdmin):
+class TaskModelAdmin(NestedModelAdmin):
     list_display = (
+        "employee",
+        "amount",
+        "business_account",
+        "warehouse",
+        "task_state",
+        "is_active",
+    )
+    readonly_fields = (
         "employee",
         "amount",
         "business_account",
