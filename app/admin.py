@@ -92,12 +92,12 @@ class TaskModelAdmin(NestedModelAdmin):
         "is_active",
     )
     readonly_fields = (
-        # "employee",
-        # "amount",
-        # "business_account",
-        # "warehouse",
-        # "task_state",
-        # "is_active",
+        "employee",
+        "amount",
+        "business_account",
+        "warehouse",
+        "task_state",
+        "is_active",
         "document",
         "wb_order_qr_document",
         "wb_supply_qr_document",
