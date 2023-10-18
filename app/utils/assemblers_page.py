@@ -64,7 +64,8 @@ def create_assemblers_page_html(task_instance, supply_instance):
         table += "<tbody>"
         for order_product in WbOrderProductModel.objects.filter(order=order).all():
             barcodes = re.findall(r'\d{5,}', order_product.barcode)
-            barcodes.remove(order.wb_skus.replace('[', '').replace(']', ''))
+            if order.wb_skus.replace('[', '').replace(']', '') in barcodes:
+                barcodes.remove(order.wb_skus.replace('[', '').replace(']', ''))
             table += f"<tr>" \
                      f"<td>{order_product.name}</td>" \
                      f"<td>{order_product.quantity}</td>" \
