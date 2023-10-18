@@ -25,6 +25,10 @@ class TaskModel(models.Model):
     task_state = models.CharField(
         max_length=32, choices=Status.choices, default=Status.NEW
     )
+    document = models.FileField(upload_to="media/files", null=True, blank=True)
+    wb_order_qr_document = models.FileField(upload_to="media/files/qr", null=True, blank=True)
+    wb_supply_qr_document = models.FileField(upload_to="media/files/qr", null=True, blank=True)
+    wb_order_stickers_pdf_doc = models.FileField(upload_to="media/files/barcodes", null=True, blank=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:

@@ -21,7 +21,6 @@ class WbOrderProductInline(NestedTabularInline):
 
 class WbOrderInline(NestedTabularInline):
     model = WbOrderModel
-    extra = 0
     readonly_fields = (
         "order_products",
         "wb_id",
@@ -48,6 +47,9 @@ class WbOrderInline(NestedTabularInline):
         "barcode",
         "svg_file",
     )
+    max_num = 0
+    extra = 0
+    inlines = [WbOrderProductInline]
     fields = (
         "wb_id",
         "wb_article",
@@ -56,8 +58,6 @@ class WbOrderInline(NestedTabularInline):
         "wb_price",
         "svg_file",
     )
-    max_num = 0
-    inlines = [WbOrderProductInline]
 
 
 class WbSupplyInline(NestedTabularInline):
@@ -92,14 +92,17 @@ class TaskModelAdmin(NestedModelAdmin):
         "is_active",
     )
     readonly_fields = (
-        "employee",
-        "amount",
-        "business_account",
-        "warehouse",
-        "task_state",
-        "is_active",
+        # "employee",
+        # "amount",
+        # "business_account",
+        # "warehouse",
+        # "task_state",
+        # "is_active",
+        "document",
+        "wb_order_qr_document",
+        "wb_supply_qr_document",
+        "wb_order_stickers_pdf_doc",
     )
-    inlines = [WbSupplyInline]
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}

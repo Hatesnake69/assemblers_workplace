@@ -13,6 +13,7 @@ class WbOrderModel(models.Model):
         related_name="orders",
         blank=True,
     )
+    is_bundle = models.BooleanField(default=False)
 
     wb_id = models.IntegerField(unique=True)
     wb_rid = models.CharField(max_length=128)

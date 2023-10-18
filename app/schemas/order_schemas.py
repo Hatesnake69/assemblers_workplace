@@ -13,7 +13,7 @@ class OrderFromWb(BaseModel):
     offices: list[str] = []
     address: Optional[dict]
     user: Optional[dict]
-    skus: list[int] = []
+    skus: list[int]
     price: int
     convertedPrice: int
     currencyCode: int
@@ -126,8 +126,8 @@ class ProductParamsFromMs(BaseModel):
     name: str
     barcodes: list[dict]
     code: str
-    packaging_class: Optional[str]
-    warehouse_place: Optional[str]
+    packaging_class: str
+    warehouse_place: str
 
 
 ms_param_map = {
