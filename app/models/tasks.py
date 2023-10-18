@@ -14,16 +14,16 @@ class Status(models.Choices):
 class TaskModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
-    employee = models.ForeignKey("app.EmployeeModel", on_delete=models.CASCADE, editable=False)
-    amount = models.PositiveIntegerField(default=1, editable=False)
+    employee = models.ForeignKey("app.EmployeeModel", on_delete=models.CASCADE)
+    amount = models.PositiveIntegerField(default=1)
     business_account = models.ForeignKey(
-        "app.WbBusinessAccountModel", on_delete=models.CASCADE, editable=False
+        "app.WbBusinessAccountModel", on_delete=models.CASCADE
     )
-    warehouse = models.ForeignKey("app.WbWarehouseModel", on_delete=models.CASCADE, editable=False)
-    created_at = models.DateTimeField(auto_created=True, auto_now_add=True, editable=False)
+    warehouse = models.ForeignKey("app.WbWarehouseModel", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_created=True, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
     task_state = models.CharField(
-        max_length=32, choices=Status.choices, default=Status.NEW, editable=False
+        max_length=32, choices=Status.choices, default=Status.NEW
     )
     document = models.FileField(upload_to="media/files", null=True, blank=True)
     wb_order_qr_document = models.FileField(upload_to="media/files/qr", null=True, blank=True)
