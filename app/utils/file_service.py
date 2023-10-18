@@ -1,30 +1,18 @@
 import base64
 import io
-import os
 
 import cairosvg
-import openpyxl
 from barcode import generate
 from barcode.writer import ImageWriter
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Font
-from openpyxl.utils import get_column_letter
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4, landscape
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
+
+from reportlab.lib.pagesizes import letter, landscape
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from reportlab.pdfgen.canvas import Canvas
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
-from reportlab.graphics import renderPDF
 
 from PIL import Image
 
-from svglib.svglib import svg2rlg, SvgRenderer
-
-from app.models import WbOrderProductModel, WbOrderModel, WbSupplyModel
+from app.models import WbOrderModel, WbSupplyModel
 
 pdfmetrics.registerFont(TTFont('FreeSans', 'FreeSans.ttf'))
 
