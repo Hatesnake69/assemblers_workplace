@@ -44,7 +44,6 @@ def create_assemblers_page_html(task_instance, supply_instance):
     task_table += "</tr>"
     task_table += '</table>'
 
-
     table = '<table class="outer-table">'
     for order in WbOrderModel.objects.filter(supply=supply_instance).all():
         table += "<tr class='order-row'>"
@@ -65,12 +64,13 @@ def create_assemblers_page_html(task_instance, supply_instance):
         table += "<tbody>"
         for order_product in WbOrderProductModel.objects.filter(order=order).all():
             barcodes = re.findall(r'\d{5,}', order_product.barcode)
+            barcodes.remove(order.wb_skus.replace('[', '').replace(']', ''))
             table += f"<tr>" \
                      f"<td>{order_product.name}</td>" \
                      f"<td>{order_product.quantity}</td>" \
                      f"<td>{order_product.code}</td>" \
                      f"<td>{order_product.storage_location}</td>" \
-                     f"<td>{', '.join(barcodes)}</td>" \
+                     f"<td>{', '.join(barcodes) if barcodes else 'Отсутствует'}</td>" \
                      f"<td>{order_product.packaging_class}</td>" \
                      f"</tr>"
         table += f"</tbody>"
