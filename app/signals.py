@@ -1,15 +1,6 @@
-import io
-from io import BytesIO
-
-import openpyxl
-from django.core.files import File
 from django.core.files.base import ContentFile
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from fpdf import FPDF
-from openpyxl import load_workbook
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 
 from .models import TaskModel, WbSupplyModel, WbOrderModel
 from .models.tasks import Status
@@ -17,8 +8,11 @@ from .models.wb_account_warehouses import WbAccountWarehouseModel
 from .services.wb_orders_service import WbOrdersService
 from .utils.assemblers_page import create_assemblers_page_html
 from .utils.disable_signals import DisableSignals
-from .utils.file_service import create_wb_orders_qr_pdf, \
-    create_stickers_document, create_wb_supply_qr_pdf
+from .utils.file_service import (
+    create_wb_orders_qr_pdf,
+    create_stickers_document,
+    create_wb_supply_qr_pdf,
+)
 
 
 @receiver(post_save, sender=TaskModel)
@@ -75,28 +69,30 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         with DisableSignals():
             instance.task_state = Status.GET_SUPPLY_STICKER
             instance.save()
+            supply = WbSupplyModel.objects.get(task=instance)
+            document_pdf = create_assemblers_page_html(
+                task_instance=instance, supply_instance=supply
+            )
+            instance.document.save(
+                f"{instance.id}_document.pdf", ContentFile(document_pdf.read())
+            )
+            qr_document = create_wb_orders_qr_pdf(task_instance=instance)
+            instance.wb_order_qr_document.save(
+                f"{instance.id}_qr_stickers.pdf", ContentFile(qr_document.read())
+            )
+            supply_qr = create_wb_supply_qr_pdf(task_instance=instance)
+            instance.wb_supply_qr_document.save(
+                f"{instance.id}_supply_qr.pdf", ContentFile(supply_qr.read())
+            )
+            barcodes_pdf = create_stickers_document(task_instance=instance)
+            instance.wb_order_stickers_pdf_doc.save(
+                f"{instance.id}_sku_stickers_qr.pdf", ContentFile(barcodes_pdf.read())
+            )
+            instance.save()
     elif instance.task_state == Status.GET_SUPPLY_STICKER.value:
         print("task closed")
 
         with DisableSignals():
-            supply = WbSupplyModel.objects.get(task=instance)
-            document_pdf = create_assemblers_page_html(task_instance=instance, supply_instance=supply)
-            instance.document.save(
-                f'{instance.id}_document.pdf', ContentFile(document_pdf.read())
-            )
-            qr_document = create_wb_orders_qr_pdf(task_instance=instance)
-            instance.wb_order_qr_document.save(
-                f'{instance.id}_qr_stickers.pdf', ContentFile(qr_document.read())
-            )
-            supply_qr = create_wb_supply_qr_pdf(task_instance=instance)
-            instance.wb_supply_qr_document.save(
-                f'{instance.id}_supply_qr.pdf', ContentFile(supply_qr.read())
-            )
-            barcodes_pdf = create_stickers_document(task_instance=instance)
-            instance.wb_order_stickers_pdf_doc.save(
-                f'{instance.id}_sku_stickers_qr.pdf', ContentFile(barcodes_pdf.read())
-            )
-
             instance.task_state = Status.CLOSE
             instance.is_active = False
             instance.save()

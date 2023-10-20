@@ -10,7 +10,6 @@ class WbOrderProductModel(models.Model):
     quantity = models.IntegerField()
     barcode = models.TextField(null=True, blank=True)
     photo = models.TextField(null=True, blank=True)
-    packaging_class = models.TextField(null=True, blank=True)
     code = models.TextField(null=True, blank=True)
     storage_location = models.TextField(null=True, blank=True)
 

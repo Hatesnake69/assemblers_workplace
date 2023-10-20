@@ -14,6 +14,7 @@ class WbOrderModel(models.Model):
         blank=True,
     )
     is_bundle = models.BooleanField(default=False)
+    packaging_class = models.TextField(null=True, blank=True)
 
     wb_id = models.IntegerField(unique=True)
     wb_rid = models.CharField(max_length=128)

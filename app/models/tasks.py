@@ -1,5 +1,7 @@
 from django.db import models
 
+from assemblers_workplace.settings import settings
+
 
 class Status(models.Choices):
     NEW = "NEW"
@@ -25,10 +27,16 @@ class TaskModel(models.Model):
     task_state = models.CharField(
         max_length=32, choices=Status.choices, default=Status.NEW
     )
-    document = models.FileField(upload_to="media/files", null=True, blank=True)
-    wb_order_qr_document = models.FileField(upload_to="media/files/qr", null=True, blank=True)
-    wb_supply_qr_document = models.FileField(upload_to="media/files/qr", null=True, blank=True)
-    wb_order_stickers_pdf_doc = models.FileField(upload_to="media/files/barcodes", null=True, blank=True)
+    document = models.FileField(upload_to="files/assemblers_doc", null=True, blank=True)
+    wb_order_qr_document = models.FileField(
+        upload_to="files/orders_qr", null=True, blank=True
+    )
+    wb_supply_qr_document = models.FileField(
+        upload_to="files/supply_qr", null=True, blank=True
+    )
+    wb_order_stickers_pdf_doc = models.FileField(
+        upload_to="files/barcodes", null=True, blank=True
+    )
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -36,4 +44,4 @@ class TaskModel(models.Model):
         db_table = "tasks"
 
     def __str__(self):
-        return f"{self.employee} {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.employee} {self.created_at.astimezone(settings.timezone).strftime('%Y-%m-%d %H:%M')}"

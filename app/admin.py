@@ -1,94 +1,35 @@
 from django.contrib import admin
-from nested_admin.nested import NestedModelAdmin, NestedTabularInline
+from django.db import models
+from django.forms import FileField
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
 
 
-class WbOrderProductInline(NestedTabularInline):
-    model = WbOrderProductModel
-    readonly_fields = (
-        "name",
-        "quantity",
-        "barcode",
-        "photo",
-        "packaging_class",
-        "code",
-        "storage_location",
-    )
-    max_num = 0
-    extra = 0
+class FileLinkWidget(FileField):
+    def render(self, name, value, attrs=None, renderer=None):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        # Определяем URL для просмотра файла
+        file_url = reverse(
+            "admin:%s_%s_download"
+            % (self.model._meta.app_label, self.model._meta.model_name),
+            args=[str(value)],
+        )
 
+        # Создаем HTML для ссылки, которая откроется в новой вкладке
+        link = f'<a href="{file_url}" target="_blank">{value}</a>'
 
-class WbOrderInline(NestedTabularInline):
-    model = WbOrderModel
-    readonly_fields = (
-        "order_products",
-        "wb_id",
-        "wb_rid",
-        "wb_created_at",
-        "wb_warehouse_id",
-        "wb_supply_id",
-        "wb_offices",
-        "wb_address",
-        "wb_user",
-        "wb_skus",
-        "wb_price",
-        "wb_converted_price",
-        "wb_currency_code",
-        "wb_converted_currency_code",
-        "wb_order_uid",
-        "wb_delivery_type",
-        "wb_nm_id",
-        "wb_chrt_id",
-        "wb_article",
-        "wb_is_large_cargo",
-        "partA",
-        "partB",
-        "barcode",
-        "svg_file",
-    )
-    max_num = 0
-    extra = 0
-    inlines = [WbOrderProductInline]
-    fields = (
-        "wb_id",
-        "wb_article",
-        "wb_rid",
-        "wb_skus",
-        "wb_price",
-        "svg_file",
-    )
-
-
-class WbSupplyInline(NestedTabularInline):
-    model = WbSupplyModel
-    readonly_fields = (
-        "wb_id",
-        "wb_name",
-        "wb_done",
-        "created_at",
-        "closed_at",
-        "deleted_at",
-        "svg_file",
-        "wb_orders",
-    )
-    max_num = 0
-    inlines = [WbOrderInline]
-    fields = (
-        "wb_id",
-        "wb_name",
-        "svg_file",
-    )
+        return mark_safe(link)
 
 
 @admin.register(TaskModel)
-class TaskModelAdmin(NestedModelAdmin):
+class TaskModelAdmin(admin.ModelAdmin):
     list_display = (
         "employee",
         "amount",
         "business_account",
         "warehouse",
-        "task_state",
         "is_active",
     )
     readonly_fields = (
@@ -96,13 +37,18 @@ class TaskModelAdmin(NestedModelAdmin):
         # "amount",
         # "business_account",
         # "warehouse",
-        "task_state",
         "is_active",
         "document",
         "wb_order_qr_document",
         "wb_supply_qr_document",
         "wb_order_stickers_pdf_doc",
     )
+
+    formfield_overrides = {
+        models.FileField: {"widget": FileLinkWidget},
+        # Пример изменения виджета для текстового поля
+        # Другие поля и виджеты
+    }
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
