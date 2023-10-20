@@ -93,7 +93,7 @@ def create_wb_supply_qr_pdf(task_instance):
     return output_pdf
 
 
-def create_stickers_document(task_instance):
+def create_stickers_pdf(task_instance):
     supply = WbSupplyModel.objects.get(task=task_instance)
     task_barcodes = [
         int(elem.wb_skus.strip("[]").split(",")[0])

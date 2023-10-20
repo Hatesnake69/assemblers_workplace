@@ -10,7 +10,7 @@ from .utils.assemblers_page import create_assemblers_page_html
 from .utils.disable_signals import DisableSignals
 from .utils.file_service import (
     create_wb_orders_qr_pdf,
-    create_stickers_document,
+    create_stickers_pdf,
     create_wb_supply_qr_pdf,
 )
 
@@ -76,15 +76,15 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             instance.document.save(
                 f"{instance.id}_document.pdf", ContentFile(document_pdf.read())
             )
-            qr_document = create_wb_orders_qr_pdf(task_instance=instance)
+            qr_pdf = create_wb_orders_qr_pdf(task_instance=instance)
             instance.wb_order_qr_document.save(
-                f"{instance.id}_qr_stickers.pdf", ContentFile(qr_document.read())
+                f"{instance.id}_qr_stickers.pdf", ContentFile(qr_pdf.read())
             )
             supply_qr = create_wb_supply_qr_pdf(task_instance=instance)
             instance.wb_supply_qr_document.save(
                 f"{instance.id}_supply_qr.pdf", ContentFile(supply_qr.read())
             )
-            barcodes_pdf = create_stickers_document(task_instance=instance)
+            barcodes_pdf = create_stickers_pdf(task_instance=instance)
             instance.wb_order_stickers_pdf_doc.save(
                 f"{instance.id}_sku_stickers_qr.pdf", ContentFile(barcodes_pdf.read())
             )

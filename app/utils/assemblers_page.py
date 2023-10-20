@@ -69,7 +69,7 @@ def create_assemblers_page_html(task_instance, supply_instance):
                 f"<tr>"
                 f"<td>{order_product.name}</td>"
                 f"<td>{order_product.quantity} шт.</td>"
-                f"<td>Код: {order_product.code}</td>"
+                f"<td>{order_product.code}</td>"
                 f"<td>Место: {order_product.storage_location}</td>"
                 f"<td>Родные ШК: {', '.join(barcodes) if barcodes else '-'}</td>"
                 f"</tr>"
@@ -88,6 +88,9 @@ def create_assemblers_page_html(task_instance, supply_instance):
         margin: 0.5cm;
         margin-bottom: 20mm; /* Установите желаемый отступ, например, 20 миллиметров */
         margin-top: 20mm;
+         @top-right{{
+        content: "Page " counter(page) " of " counter(pages);
+    }}
     }}
     body {{
         font-size: 12px; /* Устанавливаем размер шрифта в пикселях или других подходящих единицах измерения */
@@ -114,7 +117,13 @@ def create_assemblers_page_html(task_instance, supply_instance):
         width: 40%;
     }}
      .inner-table td:nth-child(2),  td:nth-child(3),  td:nth-child(4),  td:nth-child(5) {{
-        width: 15%;
+        width: 15%;  
+    }}
+    .inner-table td  {{
+        border: none;
+    }}
+    .inner-table th:first-child, td:first-child {{
+        text-align: left;
     }}
     table.no-border, table.no-border th, table.no-border td {{
         border: none;

@@ -44,6 +44,10 @@ class TaskModelAdmin(admin.ModelAdmin):
         "wb_order_stickers_pdf_doc",
     )
 
+    exclude = (
+        "task_state",
+    )
+
     formfield_overrides = {
         models.FileField: {"widget": FileLinkWidget},
         # Пример изменения виджета для текстового поля
