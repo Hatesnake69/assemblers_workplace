@@ -1,26 +1,6 @@
 from django.contrib import admin
-from django.db import models
-from django.forms import FileField
-from django.urls import reverse
-from django.utils.safestring import mark_safe
 
 from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
-
-
-class FileLinkWidget(FileField):
-    def render(self, name, value, attrs=None, renderer=None):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        # Определяем URL для просмотра файла
-        file_url = reverse(
-            "admin:%s_%s_download"
-            % (self.model._meta.app_label, self.model._meta.model_name),
-            args=[str(value)],
-        )
-
-        # Создаем HTML для ссылки, которая откроется в новой вкладке
-        link = f'<a href="{file_url}" target="_blank">{value}</a>'
-
-        return mark_safe(link)
 
 
 @admin.register(TaskModel)
@@ -47,12 +27,6 @@ class TaskModelAdmin(admin.ModelAdmin):
     exclude = (
         "task_state",
     )
-
-    formfield_overrides = {
-        models.FileField: {"widget": FileLinkWidget},
-        # Пример изменения виджета для текстового поля
-        # Другие поля и виджеты
-    }
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
