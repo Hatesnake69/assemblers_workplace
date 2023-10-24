@@ -60,7 +60,28 @@
 {% endblock %}
 
 {% block after_related_objects %}{% endblock %}
-{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+{% block submit_buttons_bottom %}
+    {% submit_row %}
+    <script>
+  (function () {
+    // Находим все кнопки submit в форме по атрибуту type="submit"
+    var submitButtons = document.querySelectorAll('input[type="submit"]');
+
+    // Функция для отключения кнопок и изменения их текста во время отправки формы
+    function disableSubmitButtons() {
+      submitButtons.forEach(function (button) {
+        button.disabled = true;
+        button.value = 'Отправка...';
+      });
+    }
+
+    // Добавляем обработчик события на отправку формы
+    document.getElementById("{{ opts.model_name }}_form").addEventListener("submit", function () {
+      disableSubmitButtons();
+    });
+  })();
+</script>
+    {% endblock %}
 {% block admin_change_form_document_ready %}
     <script id="django-admin-form-add-constants"
             src="{% static 'admin/js/change_form.js' %}"
