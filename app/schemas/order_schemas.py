@@ -124,7 +124,7 @@ class MappingResponse(BaseModel):
 
 class ProductParamsFromMs(BaseModel):
     name: str
-    barcodes: list[dict]
+    barcodes: list[dict] | None
     code: str
     packaging_class: str
     warehouse_place: str
