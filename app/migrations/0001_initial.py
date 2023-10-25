@@ -8,15 +8,6 @@ def create_employees(apps, scschema_editorhe):
     EmployeeModel = apps.get_model("app", "EmployeeModel")
     names = [
         "Иван",
-        "Мария",
-        "Александр",
-        "Екатерина",
-        "Андрей",
-        "Ольга",
-        "Сергей",
-        "Анна",
-        "Дмитрий",
-        "Наталья",
     ]
     for name in names:
         EmployeeModel.objects.create(name=name)
@@ -28,19 +19,51 @@ def create_accounts(apps, schema_editor):
     WbAccountWarehouseModel = apps.get_model("app", "WbAccountWarehouseModel")
     accounts = [
         {
-            "name": "BGD",
-            "wb_token": "geiogerilngerukhgukrhgkuerhg.ergierugwhu8hr823hisf.wefiwj",
+            "name": "БГД",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImQyZDVmMzY3LTcwN2YtNGMyZS05ZjUyLTNhMWI3NDExNWMzYSJ9.F4wEsf1DqNxxasDtDQp9ryYzw0Q2n6pGtE3jh7LpgHk",
             "warehouses": {
-                "Ryabinovaya": 7364583,
-                "Vnukovo": 545353,
+                "Рябиновая": 13203,
+                "Внуково": 800842,
+            },
+        },
+        {
+            "name": "ИП Эмиль",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjM0MDA0OTBiLWE4N2ItNGQyZS05ZjY2LWJkNjc1MWJkNjg5YyJ9.jh8nLy-E6jq6cENDfYq6oeAetftKwkcLR3Xqv6FIAss",
+            "warehouses": {
+                "Рябиновая": 4731,
+                "Внуково": 800837,
+            },
+        },
+        {
+            "name": "ИП Завалун",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjMwOGY0OTQzLWMwNTUtNDFlMC1hMjhmLTcxZGU1ZGIyNWI1YSJ9.bvZ5NBY0mbCoF-ch-4C4rctZQKYbKzktN-yF5FoXXxE",
+            "warehouses": {
+                "Рябиновая": 2395,
+                "Внуково": 800840,
             },
         },
         {
             "name": "ИП Камил",
-            "wb_token": "kgjerigjdsnniisunh89eww.ergierugwhu8hr8sdvdvs23hisf.wefssdvewg2iwj",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImZkMTQwNjBlLTJlMDYtNGQyNS05MTQyLTJmZDJjZDI1YzJlNyJ9.65mxof65h_RL72SBb0LL-Kgrza_YiMlEzdSV6y5hTBM",
             "warehouses": {
-                "Ryabinovaya": 584764586,
-                "Vnukovo": 4454234,
+                "Рябиновая": 11787,
+                "Внуково": 800844,
+            },
+        },
+        {
+            "name": "Парк Энд Гоу и К",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjE3NzZjNGJmLWViYzUtNDA5Ni05ZDkxLTU3NjBmMTZiMTJjZiJ9.cK70QkVANrwbtzQePKNNBnzcShlbh_afjdeEMLs2OYE",
+            "warehouses": {
+                "Рябиновая": 2469,
+                "Внуково": 800843,
+            },
+        },
+        {
+            "name": "МПСТОР",
+            "wb_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImZhYTcyYTJjLTE2M2ItNDNhMy1hZTZmLWU4ZTk3N2NlZGEyYyJ9.HUccCStC4Q6uySFa2QnXDB68gwDVlnFBjSjiMCjTEp4",
+            "warehouses": {
+                "Рябиновая": 800845,
+                "Внуково": 800846,
             },
         },
     ]

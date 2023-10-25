@@ -136,15 +136,6 @@ class Settings:
     get_mapping_url = os.getenv("GET_MAPPING_URL")
     get_product_info_url = os.getenv("GET_PRODUCT_INFO_URL")
 
-    admin_username: str = os.getenv("admin_username")
-    admin_password: str = os.getenv("admin_password")
-
-    SUPER_SECRET_TOKEN: str = os.getenv("SUPER_SECRET_TOKEN")
-    expires_delta_min: datetime.timedelta = datetime.timedelta(
-        float(os.getenv("EXPIRES_DELTA_MIN"))
-    )
-    ALGORITHM: str = os.getenv("ALGORITHM")
-
     ms_token: str = os.getenv("MS_TOKEN")
 
 
