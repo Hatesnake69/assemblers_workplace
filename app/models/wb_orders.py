@@ -36,8 +36,8 @@ class WbOrderModel(models.Model):
     wb_article = models.CharField(max_length=128)
     wb_is_large_cargo = models.BooleanField()
 
-    partA = models.IntegerField(null=True, blank=True)
-    partB = models.IntegerField(null=True, blank=True)
+    partA = models.CharField(max_length=128, null=True, blank=True)
+    partB = models.CharField(max_length=128, null=True, blank=True)
     barcode = models.TextField(null=True, blank=True)
     svg_file = models.TextField(null=True, blank=True)
 
