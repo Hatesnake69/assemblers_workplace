@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
+from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, EmployeeModel
 
 
 @admin.register(TaskModel)
@@ -70,6 +70,11 @@ class WbOrderModelAdmin(admin.ModelAdmin):
 @admin.register(WbOrderProductModel)
 class WbOrderProductModelAdmin(admin.ModelAdmin):
     list_display = ("name", "quantity", "barcode", "code")
+
+
+@admin.register(EmployeeModel)
+class EmployeeModelAdmin(admin.ModelAdmin):
+    list_display = ("name", )
 
 
 @admin.register(WbSupplyModel)
