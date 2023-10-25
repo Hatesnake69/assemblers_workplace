@@ -23,9 +23,9 @@ custom_pagesize = (58 * mm, 40 * mm)
 def create_wb_orders_qr_pdf(task_instance):
     supply = WbSupplyModel.objects.get(task=task_instance)
     qr_svgs = [
-        str(elem.svg_file) for elem in WbOrderModel.objects.filter(supply=supply).all()
+        str(elem.svg_file) for elem in WbOrderModel.objects.filter(supply=supply).order_by('id').all()
     ]
-
+    qr_svgs.reverse()
     # Create a PDF buffer
     output_pdf = io.BytesIO()
 
@@ -97,8 +97,9 @@ def create_stickers_pdf(task_instance):
     supply = WbSupplyModel.objects.get(task=task_instance)
     task_barcodes = [
         int(elem.wb_skus.strip("[]").split(",")[0])
-        for elem in WbOrderModel.objects.filter(supply=supply).all()
+        for elem in WbOrderModel.objects.filter(supply=supply).order_by('id').all()
     ]
+    task_barcodes.reverse()
     output_pdf = io.BytesIO()
     c = canvas.Canvas(output_pdf, pagesize=landscape(custom_pagesize))
 

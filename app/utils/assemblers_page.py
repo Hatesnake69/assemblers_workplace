@@ -36,7 +36,7 @@ def create_assemblers_page_html(task_instance, supply_instance):
     for header in row_headers:
         table += f"<th>{header}</th>"
     table += "</tr>"
-    for order in WbOrderModel.objects.filter(supply=supply_instance).all():
+    for order in WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all():
         table += fill_order_row(
             order=order
         )
