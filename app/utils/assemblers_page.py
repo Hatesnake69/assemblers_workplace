@@ -152,7 +152,7 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{formatted_barcodes or '-'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td>{wb_qr[0:-4]}<br><b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
             f"</tr>"
         )
     else:
@@ -171,7 +171,7 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{'-'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td>{wb_qr[0:-4]}<br><b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
             f"</tr>"
         )
         for order_product in order_products:
