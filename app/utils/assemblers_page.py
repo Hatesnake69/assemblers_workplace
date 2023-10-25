@@ -7,19 +7,16 @@ from app.models import WbOrderModel, WbOrderProductModel
 
 
 def create_assemblers_page_html(task_instance, supply_instance):
-    order_headers = (
+    row_headers = (
         "Номер заказа",
+        "Наименование товара",
         "Комплект",
+        "Код",
+        "Место на складе",
+        "Штрихкоды (родные)",
+        "Класс упаковки",
         "Штрихкод WB",
         "QR-код WB",
-        "Класс упавковки",
-    )
-    order_product_headers = (
-        "Название товара",
-        "Кол-во",
-        "Код",
-        "Место",
-        "Штрихкоды (родные)",
     )
     task_headers = (
         "Задание:",
@@ -28,53 +25,22 @@ def create_assemblers_page_html(task_instance, supply_instance):
         "Аккаунт:",
         "Склад:",
     )
-    task_table = '<table class="no-border">'
-    task_table += "<tr>"
-    for header in task_headers:
-        task_table += f"<td>{header}</td>"
-    task_table += "</tr><tr>"
-    task_table += (
-        f"<td>{str(task_instance)}</td>"
-        f"<td>{supply_instance.wb_id}</td>"
-        f"<td>{task_instance.amount}</td>"
-        f"<td>{task_instance.business_account}</td>"
-        f"<td>{task_instance.warehouse}</td>"
+    task_table = add_task_table(
+        supply_instance=supply_instance,
+        task_instance=task_instance,
+        task_headers=task_headers
     )
-    task_table += "</tr>"
-    task_table += "</table>"
 
     table = '<table class="outer-table">'
-    table += "<tr class='order-row'>"
-    for header in order_headers:
+    table += "<tr>"
+    for header in row_headers:
         table += f"<th>{header}</th>"
     table += "</tr>"
     for order in WbOrderModel.objects.filter(supply=supply_instance).all():
-        table += (
-            f"<tr class='order-row'>"
-            f"<td>{order.wb_id}</td>"
-            f"<td>{'Да' if order.is_bundle else 'Нет'}</td>"
-            f"<td>{order.wb_skus.replace('[', '').replace(']', '')}</td>"
-            f"<td>{order.partA + order.partB}</td>"
-            f"<td>{order.packaging_class}</td>"
-            f"</tr>"
+        table += fill_order_row(
+            order=order
         )
-        table += (
-            f"<tr class='fixed-width-row'><td colspan='5'><table class='inner-table'>"
-        )
-        for order_product in WbOrderProductModel.objects.filter(order=order).all():
-            barcodes = re.findall(r"\d{5,}", order_product.barcode)
-            if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
-                barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
-            table += (
-                f"<tr>"
-                f"<td>{order_product.name}</td>"
-                f"<td>{order_product.quantity} шт.</td>"
-                f"<td>{order_product.code}</td>"
-                f"<td>Место: {order_product.storage_location}</td>"
-                f"<td>Родные ШК: {', '.join(barcodes) if barcodes else '-'}</td>"
-                f"</tr>"
-            )
-        table += f"</table>"
+    table += "</table>"
 
     html_template = f"""
 <!DOCTYPE html>
@@ -84,55 +50,47 @@ def create_assemblers_page_html(task_instance, supply_instance):
 <meta charset="UTF-8">
 <style>
     @page {{
-        size: A4;
+        size: A4 landscape;
         margin: 0.5cm;
-        margin-bottom: 20mm; /* Установите желаемый отступ, например, 20 миллиметров */
+        margin-bottom: 20mm;
         margin-top: 20mm;
-         @top-right{{
+        @top-right {{
         content: "Page " counter(page) " of " counter(pages);
     }}
     }}
     body {{
-        font-size: 12px; /* Устанавливаем размер шрифта в пикселях или других подходящих единицах измерения */
+        font-size: 12px;
     }}
     table {{
         border-collapse: collapse;
-        width: 190mm; /* Устанавливаем фиксированную ширину для обеих таблиц */
+        width: 270mm;
     }}
-
+    .outer-table th,
+    .outer-table td {{
+        border: 1px solid black; /* Тонкие границы для .outer-table */
+        text-align: justify;
+        padding: 4px;
+    }}
     th, td {{
-        border: 1px solid black;
         text-align: center;
         padding-top: 4px;
         padding-bottom: 4px;
     }}
-
-     .outer-table th:nth-child(1), th:nth-child(2), th:nth-child(3), th:nth-child(4), th:nth-child(5) {{
-        width: 20%;
-    }} 
-    .order-row {{
-        background-color: #f0f0f0;
-    }}
-        .inner-table td:nth-child(1) {{
-        width: 40%;
-    }}
-     .inner-table td:nth-child(2),  td:nth-child(3),  td:nth-child(4),  td:nth-child(5) {{
-        width: 15%;  
-    }}
-    .inner-table td  {{
-        border: none;
-    }}
-    .inner-table th:first-child, td:first-child {{
-        text-align: left;
-    }}
-    table.no-border, table.no-border th, table.no-border td {{
-        border: none;
+    th {{
+        background-color: #333; /* Используйте нужный вам темно-серый цвет */
+        color: #fff; /* Установите белый цвет текста для лучшей видимости */
+        text-align: center !important;
     }}
     .no-border th:nth-child(3)  {{
         width: 15%
     }}
-
-   
+    .product-row {{
+        padding-left: 20px !important; /* Левый отступ в 10px */
+        text-align: left !important;
+    }}
+    .last-four {{
+        font-size: 20px; /* Размер шрифта для последних четырех цифр */
+    }}
 </style>
 </head>
 <body>
@@ -151,3 +109,90 @@ def create_assemblers_page_html(task_instance, supply_instance):
         file.write(html_template)
 
     return pdf_buffer
+
+
+def add_task_table(
+        task_headers: tuple, task_instance, supply_instance
+) -> str:
+    task_table = '<table class="no-border">'
+    task_table += "<tr>"
+    for header in task_headers:
+        task_table += f"<td>{header}</td>"
+    task_table += "</tr><tr>"
+    task_table += (
+        f"<td>{str(task_instance)}</td>"
+        f"<td>{supply_instance.wb_id}</td>"
+        f"<td>{task_instance.amount}</td>"
+        f"<td>{task_instance.business_account}</td>"
+        f"<td>{task_instance.warehouse}</td>"
+    )
+    task_table += "</tr>"
+    task_table += "</table>"
+    return task_table
+
+
+def fill_order_row(order: WbOrderModel):
+    table = ""
+    if not order.is_bundle:
+        order_product: WbOrderProductModel
+        order_product = WbOrderProductModel.objects.filter(order=order).first()
+        barcodes = re.findall(r"\d{5,}", order_product.barcode)
+        if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
+            barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
+        formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
+        wb_skus = order.wb_skus.replace('[', '').replace(']', '')
+        wb_qr = str(order.partA) + str(order.partB)
+        table += (
+            f"<tr>"
+            f"<td>{order.wb_id}</td>"
+            f"<td>{order_product.name}</td>"
+            f"<td>{'Не комплект'}</td>"
+            f"<td>{order_product.code}</td>"
+            f"<td>{order_product.storage_location}</td>"
+            f"<td>{formatted_barcodes or '-'}</td>"
+            f"<td>{order.packaging_class}</td>"
+            f"<td>{wb_skus}</td>"
+            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"</tr>"
+        )
+    else:
+        order_products: list[WbOrderProductModel]
+        order_products = WbOrderProductModel.objects.filter(order=order).all()
+        bundle_property = "комплект простой" if len(order_products) == 1 else "комплект сложный"
+        wb_skus = order.wb_skus.replace('[', '').replace(']', '')
+        wb_qr = str(order.partA) + str(order.partB)
+        table += (
+            f"<tr>"
+            f"<td>{order.wb_id}</td>"
+            f"<td style='text-align: center !important;'><strong>КОМПЛЕКТ:</strong><br>{' + '.join([order_product.name for order_product in order_products])}</td>"
+            f"<td>{bundle_property}</td>"
+            f"<td>{'-'}</td>"
+            f"<td>{'-'}</td>"
+            f"<td>{'-'}</td>"
+            f"<td>{order.packaging_class}</td>"
+            f"<td>{wb_skus}</td>"
+            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"</tr>"
+        )
+        for order_product in order_products:
+            barcodes = re.findall(r"\d{5,}", order_product.barcode)
+            print(barcodes)
+            print(order.wb_skus)
+            if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
+                barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
+            formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
+
+            table += (
+                f"<tr>"
+                f"<td></td>"
+                f"<td class='product-row'>{order_product.name}</td>"
+                f"<td>{order_product.quantity} шт.</td>"
+                f"<td>{order_product.code}</td>"
+                f"<td>{order_product.storage_location}</td>"
+                f"<td>{formatted_barcodes}</td>"
+                f"<td>{'-'}</td>"
+                f"<td>{'-'}</td>"
+                f"<td>{'-'}</td>"
+                f"</tr>"
+            )
+    return table
