@@ -44,6 +44,7 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         new_orders = wb_order_service.get_new_orders(supply=supply)
         print("new_orders")
         with DisableSignals():
+            instance.amount = len(new_orders)
             instance.task_state = Status.ADD_ORDERS
             instance.save()
     elif instance.task_state == Status.ADD_ORDERS.value:
