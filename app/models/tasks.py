@@ -31,6 +31,7 @@ class TaskModel(models.Model):
     wb_order_qr_document = models.FileField(
         upload_to="files/orders_qr", null=True, blank=True
     )
+    "hehe"
     wb_supply_qr_document = models.FileField(
         upload_to="files/supply_qr", null=True, blank=True
     )
