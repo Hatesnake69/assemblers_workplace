@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, EmployeeModel
 
@@ -13,10 +15,6 @@ class TaskModelAdmin(admin.ModelAdmin):
         "is_active",
     )
     readonly_fields = (
-        # "employee",
-        # "amount",
-        # "business_account",
-        # "warehouse",
         "is_active",
         "document",
         "wb_order_qr_document",
@@ -27,6 +25,22 @@ class TaskModelAdmin(admin.ModelAdmin):
     exclude = (
         "task_state",
     )
+
+    def response_add(self, request, obj, post_url_continue=None):
+        if "_addanother" not in request.POST and "_continue" not in request.POST:
+            # Если не нажата кнопка "Save and add another" или "Save and continue editing"
+            return HttpResponseRedirect(reverse('admin:%s_%s_change' % (
+                obj._meta.app_label,
+                obj._meta.model_name,
+            ),  args=[obj.pk]))
+        return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj, post_url_continue=None):
+        print("hehe im here")
+        return HttpResponseRedirect(reverse('admin:%s_%s_change' % (
+            obj._meta.app_label,
+            obj._meta.model_name,
+        ), args=[obj.pk]))
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
@@ -48,18 +62,6 @@ class TaskModelAdmin(admin.ModelAdmin):
             form_url,
             extra_context=extra_context,
         )
-
-    # change_form_template = "custom_change_form.html"
-    # inlines = [WbSuppliesInline]
-
-    # list_display = ('wb_id', 'wb_name', 'wb_done', 'created_at', 'closed_at', 'deleted_at')
-    # list_filter = ('wb_done',)
-    # search_fields = ('wb_id', 'wb_name')
-    # readonly_fields = ('created_at', 'closed_at', 'deleted_at')
-    # fieldsets = (
-    #     (None, {'fields': ()}),  # Установите пустые скобки для отображения всех полей из формы
-    #     ('Timestamps', {'fields': ('wb_id', 'wb_name', 'wb_done', 'created_at', 'closed_at', 'deleted_at'), 'classes': ('collapse',)}),
-    # )
 
 
 @admin.register(WbOrderModel)
