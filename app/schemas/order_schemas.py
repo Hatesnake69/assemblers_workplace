@@ -64,8 +64,8 @@ class WbOrderSchema(BaseModel):
     wb_article: str
     wb_is_large_cargo: bool
 
-    partA: Optional[int]
-    partB: Optional[int]
+    partA: Optional[str]
+    partB: Optional[str]
     barcode: Optional[str]
     svg_file: Optional[str]
 
@@ -89,8 +89,8 @@ class OrderIdWithWbIdSchema(BaseModel):
 
 class OrderWithStickerSchema(BaseModel):
     id: PositiveInt
-    partA: int
-    partB: int
+    partA: str
+    partB: str
     barcode: str
     svg_file: str
 
@@ -103,8 +103,8 @@ class UpdateSupplyIdCommand(BaseModel):
 
 class WbSticker(BaseModel):
     orderId: int
-    partA: int
-    partB: int
+    partA: str
+    partB: str
     barcode: str
     file: str
 
