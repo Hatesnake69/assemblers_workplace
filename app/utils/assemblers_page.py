@@ -164,7 +164,7 @@ def fill_order_row(order: WbOrderModel):
         table += (
             f"<tr>"
             f"<td>{order.wb_id}</td>"
-            f"<td style='text-align: justify !important;'><strong>КОМПЛЕКТ:</strong><br>{' + '.join([order_product.name for order_product in order_products])}</td>"
+            f"<td style='text-align: justify !important;'><strong>КОМПЛЕКТ:</strong></td>"
             f"<td>{bundle_property}</td>"
             f"<td>{'-'}</td>"
             f"<td>{'-'}</td>"
@@ -176,8 +176,6 @@ def fill_order_row(order: WbOrderModel):
         )
         for order_product in order_products:
             barcodes = re.findall(r"\d{5,}", order_product.barcode)
-            print(barcodes)
-            print(order.wb_skus)
             if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
                 barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
             formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
