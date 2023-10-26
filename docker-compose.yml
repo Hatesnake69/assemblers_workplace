@@ -15,8 +15,8 @@ services:
 
   django_app:
     volumes:
-      - /srv/media:/usr/src/app/media
-    container_name: django_app
+    - app_media:/usr/src/app/media
+  container_name: django_app
     build: ./
     command: sh -c "python manage.py collectstatic --noinpu && python manage.py migrate && uvicorn assemblers_workplace.asgi:application --host 0.0.0.0 --port ${API_PORT}"
       - ./:/usr/src/app/
@@ -26,6 +26,10 @@ services:
       - ${API_PORT}:${API_PORT}
     networks:
       my_api_network:
+
+
+volumes:
+  app_media:
 
 
 networks:
