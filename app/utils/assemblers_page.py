@@ -55,7 +55,7 @@ def create_assemblers_page_html(task_instance, supply_instance):
         margin-bottom: 20mm;
         margin-top: 20mm;
         @top-right {{
-        content: "Page " counter(page) " of " counter(pages);
+        content: "Стр. " counter(page) " из " counter(pages);
     }}
     }}
     body {{
