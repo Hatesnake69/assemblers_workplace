@@ -79,6 +79,12 @@
     document.getElementById("{{ opts.model_name }}_form").addEventListener("submit", function () {
       disableSubmitButtons();
     });
+        document.addEventListener("DOMContentLoaded", function () {
+  var fileLink = document.querySelector(".file-upload a");
+  if (fileLink) {
+    fileLink.setAttribute("target", "_blank");
+  }
+});
   })();
 </script>
     {% endblock %}
