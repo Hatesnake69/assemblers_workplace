@@ -55,7 +55,7 @@ def create_wb_orders_qr_pdf(task_instance):
     c = canvas.Canvas(output_pdf, pagesize=landscape(custom_pagesize))
     for image in qr_images:
         c.drawInlineImage(
-            image, 0, 0, landscape(custom_pagesize)[0], landscape(custom_pagesize)[1]
+            image.rotate(180, expand=True), 0, 0, landscape(custom_pagesize)[0], landscape(custom_pagesize)[1]
         )
         c.showPage()
     c.save()
@@ -82,7 +82,7 @@ def create_wb_supply_qr_pdf(task_instance):
     png_image = Image.open(io.BytesIO(png_data))
     c = canvas.Canvas(output_pdf, pagesize=landscape(custom_pagesize))
     c.drawInlineImage(
-        png_image, 0, 0, landscape(custom_pagesize)[0], landscape(custom_pagesize)[1]
+        png_image.rotate(180, expand=True), 0, 0, landscape(custom_pagesize)[0], landscape(custom_pagesize)[1]
     )
     c.showPage()
     c.save()
