@@ -82,10 +82,14 @@
       disableSubmitButtons();
     });
   })();
-      document.addEventListener("DOMContentLoaded", function () {
-  var readonlyLinks = Array.from(document.querySelectorAll(".readonly a"));
-  readonlyLinks.map(function (link) {
-  link.setAttribute("target", "_blank")
+    document.addEventListener("DOMContentLoaded", function () {
+  // Найти все ссылки с классом "readonly"
+  var readonlyLinks = document.querySelectorAll(".readonly a");
+
+  // Перебрать найденные ссылки и установить атрибут "target" в "_blank"
+  readonlyLinks.forEach(function (link) {
+    link.setAttribute("target", "_blank");
+  });
 });
 </script>
     {% endblock %}
