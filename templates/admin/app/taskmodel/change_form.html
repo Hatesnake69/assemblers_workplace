@@ -59,8 +59,10 @@
 {% endfor %}
 {% endblock %}
 
-{% block after_related_objects %}{% endblock %}
-{% block submit_buttons_bottom %}
+{% block after_related_objects %}
+
+{% endblock %}
+    {% block submit_buttons_bottom %}
     {% submit_row %}
     <script>
   (function () {
@@ -81,10 +83,9 @@
     });
   })();
       document.addEventListener("DOMContentLoaded", function () {
-  var fileLink = document.querySelector(".readonly a");
-  if (fileLink) {
-    fileLink.setAttribute("target", "_blank");
-  }
+  var readonlyLinks = Array.from(document.querySelectorAll(".readonly a"));
+  readonlyLinks.map(function (link) {
+  link.setAttribute("target", "_blank")
 });
 </script>
     {% endblock %}
