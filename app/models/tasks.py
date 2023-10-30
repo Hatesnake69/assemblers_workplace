@@ -27,14 +27,15 @@ class TaskModel(models.Model):
     task_state = models.CharField(
         max_length=32, choices=Status.choices, default=Status.NEW
     )
-    document = models.FileField(upload_to="files/assemblers_doc", null=True, blank=True)
+    package_document = models.FileField(upload_to="files/package_doc", null=True, blank=True)
+    assembler_document = models.FileField(upload_to="files/assemblers_doc", null=True, blank=True)
     wb_order_qr_document = models.FileField(
         upload_to="files/orders_qr", null=True, blank=True
     )
     wb_supply_qr_document = models.FileField(
         upload_to="files/supply_qr", null=True, blank=True
     )
-    wb_order_stickers_pdf_doc = models.FileField(
+    wb_order_stickers_document = models.FileField(
         upload_to="files/barcodes", null=True, blank=True
     )
     is_active = models.BooleanField(default=True)
