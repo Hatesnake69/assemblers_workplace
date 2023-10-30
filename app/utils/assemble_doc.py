@@ -19,8 +19,8 @@ def create_assemble_doc(task_instance: TaskModel, supply_instance: WbSupplyModel
     task_headers = (
         "Задание:",
         "Номер поставки:",
-        "Кол-во товаров:",
         "Кол-во заказов:",
+        "Кол-во товаров:",
         "Аккаунт:",
         "Склад:",
     )
