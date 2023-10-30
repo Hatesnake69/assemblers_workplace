@@ -91,9 +91,6 @@ def create_package_doc(task_instance, supply_instance):
         padding-left: 20px !important; /* Левый отступ в 10px */
         text-align: left !important;
     }}
-    .last-four {{
-        font-size: 20px; /* Размер шрифта для последних четырех цифр */
-    }}
 </style>
 </head>
 <body>
@@ -152,7 +149,7 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{'Не комплект'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td>{wb_qr}</td>"
             f"</tr>"
         )
     else:
@@ -168,7 +165,7 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{bundle_property}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td>{wb_qr}</td>"
             f"</tr>"
         )
         for order_product in order_products:
