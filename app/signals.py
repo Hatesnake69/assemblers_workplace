@@ -81,7 +81,7 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
                 f"{instance.id}_supply_qr.pdf", ContentFile(supply_qr.read())
             )
             barcodes_pdf = create_stickers_pdf(task_instance=instance)
-            instance.wb_order_qr_document.save(
+            instance.wb_order_stickers_document.save(
                 f"{instance.id}_sku_stickers_qr.pdf", ContentFile(barcodes_pdf.read())
             )
             instance.save()
