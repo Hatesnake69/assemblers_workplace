@@ -1,4 +1,3 @@
-import datetime
 from typing import Optional
 
 from pydantic import BaseModel, PositiveInt
@@ -64,8 +63,8 @@ class WbOrderSchema(BaseModel):
     wb_article: str
     wb_is_large_cargo: bool
 
-    partA: Optional[str]
-    partB: Optional[str]
+    partA: Optional[int]
+    partB: Optional[int]
     barcode: Optional[str]
     svg_file: Optional[str]
 
@@ -89,8 +88,8 @@ class OrderIdWithWbIdSchema(BaseModel):
 
 class OrderWithStickerSchema(BaseModel):
     id: PositiveInt
-    partA: str
-    partB: str
+    partA: int
+    partB: int
     barcode: str
     svg_file: str
 
@@ -103,8 +102,8 @@ class UpdateSupplyIdCommand(BaseModel):
 
 class WbSticker(BaseModel):
     orderId: int
-    partA: str
-    partB: str
+    partA: int
+    partB: int
     barcode: str
     file: str
 
@@ -124,10 +123,22 @@ class MappingResponse(BaseModel):
 
 class ProductParamsFromMs(BaseModel):
     name: str
-    barcodes: list[dict] | None
+    barcodes: list[dict]
     code: str
     packaging_class: str
     warehouse_place: str
+
+
+class AssembleProductSchema(BaseModel):
+    name: str
+    amount: int
+    code: str
+    storage_location: str
+    barcodes: str
+
+
+class AssembleDocSchema(BaseModel):
+    map_of_products: dict[str, AssembleProductSchema]
 
 
 ms_param_map = {
