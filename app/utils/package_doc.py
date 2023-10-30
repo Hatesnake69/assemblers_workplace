@@ -52,12 +52,13 @@ def create_package_doc(task_instance, supply_instance):
         margin-bottom: 20mm;
         margin-top: 20mm;
         @top-right {{
-        content: "Page " counter(page) " of " counter(pages);
+            content: "Стр. " counter(page) " из " counter(pages);
         }}
         @top-center:first {{
-        content: "Упаковочный лист";
-        font-size: 20px;
-        color: #333; /* Цвет по вашему выбору */
+            content: "Упаковочный лист";
+            font-size: 20px;
+            color: #333; /* Цвет по вашему выбору */
+            }}
         }}
     }}
     body {{

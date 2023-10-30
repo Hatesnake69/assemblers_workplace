@@ -53,13 +53,13 @@ def create_assemble_doc(task_instance: TaskModel, supply_instance: WbSupplyModel
             margin: 0.5cm;
             margin-bottom: 20mm;
             margin-top: 20mm;
+            @top-right {{
+                content: "Стр. " counter(page) " из " counter(pages);
+            }}
             @top-center:first {{
                 content: "Сборочный лист";
                 font-size: 20px;
                 color: #333; /* Цвет по вашему выбору */
-            }}
-            @top-right {{
-            content: "Page " counter(page) " of " counter(pages);
             }}
         }}
         body {{
