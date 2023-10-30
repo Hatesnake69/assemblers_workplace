@@ -1,4 +1,5 @@
 import io
+import re
 
 import weasyprint
 
@@ -157,17 +158,21 @@ def get_all_assemble_products(orders: list[WbOrderModel]) -> AssembleDocSchema:
 def get_products_from_order(order: WbOrderModel) -> AssembleDocSchema:
     res = dict()
     order_products: list[WbOrderProductModel] = WbOrderProductModel.objects.filter(order=order).all()
-    for order in order_products:
-        if not res.get(order.name):
-            res[order.name] = AssembleProductSchema(
-                name=order.name,
+    for order_product in order_products:
+        if not res.get(order_product.name):
+            barcodes = re.findall(r"\d{5,}", order_product.barcode)
+            if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
+                barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
+            formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
+            res[order_product.name] = AssembleProductSchema(
+                name=order_product.name,
                 amount=1,
-                code=order.code,
-                storage_location=order.storage_location,
-                barcodes=order.barcode,
+                code=order_product.code,
+                storage_location=order_product.storage_location,
+                barcodes=formatted_barcodes,
             )
         else:
-            res[order.name].amount += 1
+            res[order_product.name].amount += 1
 
     return AssembleDocSchema(
         map_of_products=res
