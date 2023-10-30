@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 
-from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, EmployeeModel
+from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
 
 
 @admin.register(TaskModel)
@@ -16,31 +14,16 @@ class TaskModelAdmin(admin.ModelAdmin):
     )
     readonly_fields = (
         "is_active",
-        "document",
+        "package_document",
+        "assembler_document",
         "wb_order_qr_document",
         "wb_supply_qr_document",
-        "wb_order_stickers_pdf_doc",
+        "wb_order_stickers_document",
     )
 
     exclude = (
         "task_state",
     )
-
-    def response_add(self, request, obj, post_url_continue=None):
-        if "_addanother" not in request.POST and "_continue" not in request.POST:
-            # Если не нажата кнопка "Save and add another" или "Save and continue editing"
-            return HttpResponseRedirect(reverse('admin:%s_%s_change' % (
-                obj._meta.app_label,
-                obj._meta.model_name,
-            ),  args=[obj.pk]))
-        return super().response_add(request, obj, post_url_continue)
-
-    def response_change(self, request, obj, post_url_continue=None):
-        print("hehe im here")
-        return HttpResponseRedirect(reverse('admin:%s_%s_change' % (
-            obj._meta.app_label,
-            obj._meta.model_name,
-        ), args=[obj.pk]))
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
         extra_context = extra_context or {}
@@ -72,11 +55,6 @@ class WbOrderModelAdmin(admin.ModelAdmin):
 @admin.register(WbOrderProductModel)
 class WbOrderProductModelAdmin(admin.ModelAdmin):
     list_display = ("name", "quantity", "barcode", "code")
-
-
-@admin.register(EmployeeModel)
-class EmployeeModelAdmin(admin.ModelAdmin):
-    list_display = ("name", )
 
 
 @admin.register(WbSupplyModel)
