@@ -164,7 +164,7 @@ def fill_order_row(order: WbOrderModel):
         table += (
             f"<tr>"
             f"<td>{order.wb_id}</td>"
-            f"<td style='text-align: center !important;'><strong>КОМПЛЕКТ:</strong><br>{' + '.join([order_product.name for order_product in order_products])}</td>"
+            f"<td><strong>КОМПЛЕКТ:</strong></td>"
             f"<td>{bundle_property}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
