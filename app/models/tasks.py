@@ -16,29 +16,29 @@ class Status(models.Choices):
 class TaskModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
-    employee = models.ForeignKey("app.EmployeeModel", on_delete=models.CASCADE)
-    amount = models.PositiveIntegerField(default=1)
+    employee = models.ForeignKey("app.EmployeeModel", on_delete=models.CASCADE, verbose_name="Сотрудник",)
+    amount = models.PositiveIntegerField(default=1, verbose_name="Количество",)
     business_account = models.ForeignKey(
-        "app.WbBusinessAccountModel", on_delete=models.CASCADE
+        "app.WbBusinessAccountModel", on_delete=models.CASCADE, verbose_name="Аккаунт",
     )
-    warehouse = models.ForeignKey("app.WbWarehouseModel", on_delete=models.CASCADE)
+    warehouse = models.ForeignKey("app.WbWarehouseModel", on_delete=models.CASCADE, verbose_name="Склад",)
     created_at = models.DateTimeField(auto_created=True, auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
     task_state = models.CharField(
         max_length=32, choices=Status.choices, default=Status.NEW
     )
-    package_document = models.FileField(upload_to="files/package_doc", null=True, blank=True)
-    assembler_document = models.FileField(upload_to="files/assemblers_doc", null=True, blank=True)
+    package_document = models.FileField(upload_to="files/package_doc", null=True, blank=True, verbose_name="Упаковочный лис",)
+    assembler_document = models.FileField(upload_to="files/assemblers_doc", null=True, blank=True, verbose_name="Сборочный лист",)
     wb_order_qr_document = models.FileField(
-        upload_to="files/orders_qr", null=True, blank=True
+        upload_to="files/orders_qr", null=True, blank=True, verbose_name="Лист WB qr-кодов",
     )
     wb_supply_qr_document = models.FileField(
-        upload_to="files/supply_qr", null=True, blank=True
+        upload_to="files/supply_qr", null=True, blank=True, verbose_name="Qr-код поставки",
     )
     wb_order_stickers_document = models.FileField(
-        upload_to="files/barcodes", null=True, blank=True
+        upload_to="files/barcodes", null=True, blank=True, verbose_name="Лист WB штрихкодов",
     )
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True, verbose_name="Активно",)
 
     class Meta:
         # Указывает имя таблицы в базе данных

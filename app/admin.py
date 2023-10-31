@@ -27,6 +27,11 @@ class TaskModelAdmin(admin.ModelAdmin):
         "task_state",
     )
 
+    class Meta:
+        model = TaskModel
+        verbose_name = "Сборочная задача"  # Название модели в единственном числе
+        verbose_name_plural = "Сборочные задачи"  # Название модели во множественном числе
+
     def response_add(self, request, obj, post_url_continue=None):
         if "_addanother" not in request.POST and "_continue" not in request.POST:
             # Если не нажата кнопка "Save and add another" или "Save and continue editing"
