@@ -37,7 +37,6 @@ class TaskModelAdmin(admin.ModelAdmin):
         return super().response_add(request, obj, post_url_continue)
 
     def response_change(self, request, obj, post_url_continue=None):
-        print("hehe im here")
         return HttpResponseRedirect(reverse('admin:%s_%s_change' % (
             obj._meta.app_label,
             obj._meta.model_name,
