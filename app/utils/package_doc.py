@@ -149,7 +149,7 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{'Не комплект'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[:-4]} <b>{wb_qr[-4:]}</b></td>"
+            f"<td style='white-space: nowrap;'>{wb_qr[:-4]} <b>{wb_qr[-4:]}</b></td>"
             f"</tr>"
         )
     else:
