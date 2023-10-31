@@ -43,6 +43,8 @@ class TaskModel(models.Model):
     class Meta:
         # Указывает имя таблицы в базе данных
         db_table = "tasks"
+        verbose_name = "Сборочная задача"  # Название модели в единственном числе
+        verbose_name_plural = "Сборочные задачи"  # Название модели во множественном числе
 
     def __str__(self):
         return f"{self.employee} {self.created_at.astimezone(settings.timezone).strftime('%Y-%m-%d %H:%M')}"
