@@ -166,13 +166,13 @@ def get_products_from_order(order: WbOrderModel) -> AssembleDocSchema:
             formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
             res[order_product.name] = AssembleProductSchema(
                 name=order_product.name,
-                amount=1,
+                amount=order_product.quantity,
                 code=order_product.code,
                 storage_location=order_product.storage_location,
                 barcodes=formatted_barcodes,
             )
         else:
-            res[order_product.name].amount += 1
+            res[order_product.name].amount += order_product.quantity
 
     return AssembleDocSchema(
         map_of_products=res
