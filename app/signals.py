@@ -7,7 +7,6 @@ from .models.tasks import Status
 from .models.wb_account_warehouses import WbAccountWarehouseModel
 from .services.wb_orders_service import WbOrdersService
 from .utils.assemble_doc import create_assemble_doc
-from .utils.assemblers_page import create_assemblers_page_html
 from .utils.disable_signals import DisableSignals
 from .utils.file_service import (
     create_wb_orders_qr_pdf,

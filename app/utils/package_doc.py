@@ -33,7 +33,7 @@ def create_package_doc(task_instance, supply_instance):
     for header in row_headers:
         table += f"<th>{header}</th>"
     table += "</tr>"
-    for order in WbOrderModel.objects.filter(supply=supply_instance).all():
+    for order in WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all():
         table += fill_order_row(
             order=order
         )
@@ -135,7 +135,7 @@ def fill_order_row(order: WbOrderModel):
     table = ""
     if not order.is_bundle:
         order_product: WbOrderProductModel
-        order_product = WbOrderProductModel.objects.filter(order=order).first()
+        order_product = WbOrderProductModel.objects.filter(order=order).order_by('id').first()
         barcodes = re.findall(r"\d{5,}", order_product.barcode)
         if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
             barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
@@ -154,7 +154,7 @@ def fill_order_row(order: WbOrderModel):
         )
     else:
         order_products: list[WbOrderProductModel]
-        order_products = WbOrderProductModel.objects.filter(order=order).all()
+        order_products = WbOrderProductModel.objects.filter(order=order).order_by('id').all()
         bundle_property = "комплект простой" if len(order_products) == 1 else "комплект сложный"
         wb_skus = order.wb_skus.replace('[', '').replace(']', '')
         wb_qr = str(order.partA) + str(order.partB)

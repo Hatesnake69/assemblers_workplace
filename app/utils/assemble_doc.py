@@ -36,7 +36,9 @@ def create_assemble_doc(task_instance: TaskModel, supply_instance: WbSupplyModel
         table += f"<th>{header}</th>"
     table += "</tr>"
 
-    assemble_doc = get_all_assemble_products(orders=WbOrderModel.objects.filter(supply=supply_instance).all())
+    assemble_doc = get_all_assemble_products(
+        orders=WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all()
+    )
 
     table += fill_assemble_table(assemble_doc=assemble_doc)
 
@@ -124,10 +126,10 @@ def add_task_table(
     for header in task_headers:
         task_table += f"<td>{header}</td>"
     task_table += "</tr><tr>"
-    orders = WbOrderModel.objects.filter(supply=supply_instance).all()
+    orders = WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all()
     products_amount = 0
     for order in orders:
-        products = WbOrderProductModel.objects.filter(order=order).all()
+        products = WbOrderProductModel.objects.filter(order=order).order_by('id').all()
         for product in products:
             products_amount += product.quantity
     task_table += (
@@ -157,7 +159,7 @@ def get_all_assemble_products(orders: list[WbOrderModel]) -> AssembleDocSchema:
 
 def get_products_from_order(order: WbOrderModel) -> AssembleDocSchema:
     res = dict()
-    order_products: list[WbOrderProductModel] = WbOrderProductModel.objects.filter(order=order).all()
+    order_products: list[WbOrderProductModel] = WbOrderProductModel.objects.filter(order=order).order_by('id').all()
     for order_product in order_products:
         if not res.get(order_product.name):
             barcodes = re.findall(r"\d{5,}", order_product.barcode)
