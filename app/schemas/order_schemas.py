@@ -102,8 +102,8 @@ class UpdateSupplyIdCommand(BaseModel):
 
 class WbSticker(BaseModel):
     orderId: int
-    partA: int
-    partB: int
+    partA: str
+    partB: str
     barcode: str
     file: str
 
