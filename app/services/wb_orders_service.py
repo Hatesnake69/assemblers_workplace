@@ -270,7 +270,7 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
 
 def get_product_params(product_from_ms: dict) -> ProductParamsFromMs:
     name = product_from_ms.get("name")
-    barcodes = product_from_ms.get("barcodes")
+    barcodes = product_from_ms.get("barcodes") or "-"
     code = product_from_ms.get("code")
     packaging_class = "-"
     warehouse_place = "-"
