@@ -60,7 +60,6 @@ def create_package_doc(task_instance, supply_instance):
             color: #333; /* Цвет по вашему выбору */
             }}
         }}
-    }}
     body {{
         font-size: 12px !important;
     }}
