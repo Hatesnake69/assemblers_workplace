@@ -3,13 +3,13 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-from assemblers_workplace.settings import settings
+from assemblers_workplace.settings import config
 
 
 def create_allowed_ips(apps, scschema_editorhe):
     AllowedIpModel = apps.get_model("app", "AllowedIpModel")
 
-    for elem in settings.allowed_ips:
+    for elem in config.allowed_ips:
         AllowedIpModel.objects.create(name=elem.name, ip=elem.ip)
 
 class Migration(migrations.Migration):
