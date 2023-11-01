@@ -47,7 +47,7 @@ def create_package_doc(task_instance, supply_instance):
 <meta charset="UTF-8">
 <style>
     @page {{
-        size: A4 landscape;
+        size: A4;
         margin: 0.5cm;
         margin-bottom: 20mm;
         margin-top: 20mm;
@@ -62,11 +62,11 @@ def create_package_doc(task_instance, supply_instance):
         }}
     }}
     body {{
-        font-size: 12px;
+        font-size: 12px !important;
     }}
     table {{
         border-collapse: collapse;
-        width: 280mm;
+        width: 200mm;
     }}
     .outer-table th,
     .outer-table td {{
