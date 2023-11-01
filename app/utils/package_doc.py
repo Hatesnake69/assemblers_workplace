@@ -65,7 +65,7 @@ def create_package_doc(task_instance, supply_instance):
     }}
     table {{
         border-collapse: collapse;
-        width: 200mm;
+        width: 190mm;
     }}
     .outer-table th,
     .outer-table td {{
