@@ -64,8 +64,13 @@ def create_package_doc(task_instance, supply_instance):
         font-size: 12px !important;
     }}
     table {{
+        page-break-inside: auto;
         border-collapse: collapse;
         width: 190mm;
+    }}
+    .table tr {{
+        page-break-inside:avoid; 
+        page-break-after:auto
     }}
     .outer-table th,
     .outer-table td {{

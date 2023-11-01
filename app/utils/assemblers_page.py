@@ -62,8 +62,13 @@ def create_assemblers_page_html(task_instance, supply_instance):
         font-size: 12px;
     }}
     table {{
+        page-break-inside: auto;
         border-collapse: collapse;
         width: 270mm;
+    }}
+    .table tr {{
+        page-break-inside:avoid; 
+        page-break-after:auto
     }}
     .outer-table th,
     .outer-table td {{
