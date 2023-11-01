@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel
+from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, AllowedIpModel
 
 
 @admin.register(TaskModel)
@@ -84,4 +84,14 @@ class WbSupplyModelAdmin(admin.ModelAdmin):
         "closed_at",
         "deleted_at",
         "svg_file",
+    )
+
+
+@admin.register(AllowedIpModel)
+class WbSupplyModelAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "ip",
+        "created_at",
+        "updated_at",
     )
