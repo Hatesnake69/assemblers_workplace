@@ -9,13 +9,14 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import datetime
 import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import pytz as pytz
+import yaml
 from dotenv import load_dotenv
+from pydantic.dataclasses import dataclass
 
 load_dotenv()
 
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "app.ip_whitelist_middleware.WhitelistMiddleware",
 ]
 
 ROOT_URLCONF = "assemblers_workplace.urls"
@@ -139,6 +141,35 @@ class Settings:
     ms_token: str = os.getenv("MS_TOKEN")
 
 
+@dataclass
+class IpConfig:
+    name: str
+    ip: str
+
+
+@dataclass
+class AccountWarehouse:
+    name: str
+    id: str
+
+
+@dataclass
+class AccountConfig:
+    name: str
+    wb_token: str
+    warehouses: list[AccountWarehouse]
+
+
+@dataclass
+class Config:
+    allowed_ips: list[IpConfig]
+    accounts: list[AccountConfig]
+
+
+with open("config.yaml", "r") as file:
+    config_data = yaml.safe_load(file)
+
+config = Config(**config_data)
 settings = Settings()
 
 DATABASES = {
