@@ -67,8 +67,10 @@ class WbOrdersService:
                 url=settings.get_mapping_url,
                 params={"nm_id": order.nmId},
                 headers={},
-            )
-            info_from_mapping = MappingResponse.parse_obj(resp_from_mapping.json()[0])
+            ).json()
+            if len(resp_from_mapping) == 0:
+                continue
+            info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
             patch_req = self.request_api.patch(
                 url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
                 headers={
