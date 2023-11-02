@@ -1,0 +1,61 @@
+allowed_ips:
+    - name: Vova
+      ip: "37.99.38.223"
+    - name: dev
+      ip: "217.18.63.28"
+    - name: Kamil 1
+      ip: "109.252.162.245"
+    - name: Kamil 2
+      ip: "37.220.84.160"
+    - name: Kamil 3
+      ip: "192.248.161.135"
+    - name: Warehouse 1
+      ip: "217.12.34.215"
+    - name: Warehouse 2
+      ip: "83.69.213.138"
+
+accounts:
+    - name: БГД
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImQyZDVmMzY3LTcwN2YtNGMyZS05ZjUyLTNhMWI3NDExNWMzYSJ9.F4wEsf1DqNxxasDtDQp9ryYzw0Q2n6pGtE3jh7LpgHk
+      warehouses:
+        - name: Рябиновая
+          id: "13203"
+        - name: Внуково
+          id: "800842"
+    - name: ИП Эмиль
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjM0MDA0OTBiLWE4N2ItNGQyZS05ZjY2LWJkNjc1MWJkNjg5YyJ9.jh8nLy-E6jq6cENDfYq6oeAetftKwkcLR3Xqv6FIAss
+      warehouses:
+        - name: Рябиновая
+          id: "4731"
+        - name: Внуково
+          id: "800837"
+    - name: ИП Завалун
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjMwOGY0OTQzLWMwNTUtNDFlMC1hMjhmLTcxZGU1ZGIyNWI1YSJ9.bvZ5NBY0mbCoF-ch-4C4rctZQKYbKzktN-yF5FoXXxE
+      warehouses:
+        - name: Рябиновая
+          id: "2395"
+        - name: Внуково
+          id: "800840"
+    - name: ИП Камил
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImZkMTQwNjBlLTJlMDYtNGQyNS05MTQyLTJmZDJjZDI1YzJlNyJ9.65mxof65h_RL72SBb0LL-Kgrza_YiMlEzdSV6y5hTBM
+      warehouses:
+        - name: Рябиновая
+          id: "11787"
+        - name: Внуково
+          id: "800844"
+
+    - name: Парк Энд Гоу и К
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6IjE3NzZjNGJmLWViYzUtNDA5Ni05ZDkxLTU3NjBmMTZiMTJjZiJ9.cK70QkVANrwbtzQePKNNBnzcShlbh_afjdeEMLs2OYE
+      warehouses:
+        - name: Рябиновая
+          id: "2469"
+        - name: Внуково
+          id: "800843"
+
+    - name: МПСТОР
+      wb_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NJRCI6ImZhYTcyYTJjLTE2M2ItNDNhMy1hZTZmLWU4ZTk3N2NlZGEyYyJ9.HUccCStC4Q6uySFa2QnXDB68gwDVlnFBjSjiMCjTEp4
+      warehouses:
+        - name: Рябиновая
+          id: "800845"
+        - name: Внуково
+          id: "800846"

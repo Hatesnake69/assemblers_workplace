@@ -100,7 +100,6 @@ class WbOrdersService:
                     wb_nm_id=order.nmId,
                     wb_chrt_id=order.chrtId,
                     wb_article=order.article,
-                    wb_is_large_cargo=order.isLargeCargo,
                 )
                 new_orders.append(new_order)
 

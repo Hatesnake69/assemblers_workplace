@@ -22,7 +22,6 @@ class OrderFromWb(BaseModel):
     nmId: PositiveInt
     chrtId: PositiveInt
     article: str
-    isLargeCargo: bool
 
 
 class OrdersResponseFromWb(BaseModel):
@@ -61,7 +60,6 @@ class WbOrderSchema(BaseModel):
     wb_nm_id: int
     wb_chrt_id: int
     wb_article: str
-    wb_is_large_cargo: bool
 
     partA: Optional[int]
     partB: Optional[int]

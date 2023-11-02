@@ -34,7 +34,6 @@ class WbOrderModel(models.Model):
     wb_nm_id = models.IntegerField()
     wb_chrt_id = models.IntegerField()
     wb_article = models.CharField(max_length=128)
-    wb_is_large_cargo = models.BooleanField()
 
     partA = models.CharField(max_length=128, null=True, blank=True)
     partB = models.CharField(max_length=128, null=True, blank=True)
