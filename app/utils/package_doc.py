@@ -68,10 +68,6 @@ def create_package_doc(task_instance, supply_instance):
         border-collapse: collapse;
         width: 190mm;
     }}
-    .table tr {{
-        page-break-inside:avoid; 
-        page-break-after:auto
-    }}
     .outer-table th,
     .outer-table td {{
         border: 1px solid black; /* Тонкие границы для .outer-table */
@@ -82,6 +78,10 @@ def create_package_doc(task_instance, supply_instance):
         text-align: center;
         padding-top: 4px;
         padding-bottom: 4px;
+    }}
+    tr {{
+        page-break-inside:avoid; 
+        page-break-after:auto
     }}
     th {{
         background-color: #333; /* Используйте нужный вам темно-серый цвет */
