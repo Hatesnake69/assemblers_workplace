@@ -23,6 +23,8 @@ class RequestAPI:
             response = requests.post(url=url, headers=headers, params=params, json=body)
             if response.ok:
                 return response
+            with open('error_log.txt', 'a') as file:
+                file.write(f"{response.text}\n")
             counter -= 1
             time.sleep(0.5)
         raise Exception("website is not responding well")
@@ -38,6 +40,8 @@ class RequestAPI:
             )
             if response.ok:
                 return response
+            with open('error_log.txt', 'a') as file:
+                file.write(f"{response.text}\n")
             counter -= 1
             time.sleep(0.5)
         raise Exception("website is not responding well")
