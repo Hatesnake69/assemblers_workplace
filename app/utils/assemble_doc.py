@@ -83,6 +83,10 @@ def create_assemble_doc(task_instance: TaskModel, supply_instance: WbSupplyModel
             padding-top: 4px;
             padding-bottom: 4px;
         }}
+        tr {{
+            page-break-inside:avoid; 
+            page-break-after:auto
+        }}
         th {{
             background-color: #333; /* Используйте нужный вам темно-серый цвет */
             color: #fff; /* Установите белый цвет текста для лучшей видимости */
