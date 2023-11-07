@@ -45,7 +45,9 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             print("new orders added")
             supply = WbSupplyModel.objects.get(task=instance)
             new_orders = [order for order in WbOrderModel.objects.filter(supply=supply)]
-            wb_order_service.get_order_stickers(orders=new_orders)
+            batch_size = 100
+            for orders_batch in (new_orders[i:i + batch_size] for i in range(0, len(new_orders), batch_size)):
+                wb_order_service.get_order_stickers(orders=orders_batch)
             instance.task_state = Status.GET_ORDERS_STICKERS
             instance.save()
             print("orders added to supply")
