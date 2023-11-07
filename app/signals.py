@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -30,8 +32,9 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             wb_order_service = WbOrdersService(
                 wb_token=wb_token, amount=amount, warehouse_id=account_warehouse.wb_id
             )
+            moscow_time = instance.created_at + datetime.timedelta(hours=3)
             supply_name = (
-                f"{instance.employee} {instance.created_at.strftime('%Y-%m-%d %H:%M')}"
+                f"{instance.employee} {moscow_time.strftime('%Y-%m-%d %H:%M')}"
             )
             new_supply = wb_order_service.create_new_supply(name=supply_name, task=instance)
             instance.task_state = Status.CREATE_SUPPLY
