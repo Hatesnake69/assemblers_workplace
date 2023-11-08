@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
 
-  db:
+  assemblers_db:
     container_name: db
     image: "postgres:13-alpine"
     volumes:
@@ -15,7 +15,7 @@ services:
       my_api_network:
 
 
-  django_app:
+  assemblers_app:
     volumes:
       - ./media:/app/media
     container_name: django_app
