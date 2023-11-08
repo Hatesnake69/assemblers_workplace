@@ -2,7 +2,14 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, AllowedIpModel
+from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, AllowedIpModel, EmployeeModel
+
+
+@admin.register(EmployeeModel)
+class EmployeeModelAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+    )
 
 
 @admin.register(TaskModel)
