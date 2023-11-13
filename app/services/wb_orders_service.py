@@ -243,7 +243,7 @@ def get_orders_not_for_today(chunk_of_orders: OrdersResponseFromWb):
     for order in chunk_of_orders.orders:
         datetime_today = datetime.datetime.now(tz=settings.timezone).replace(
             hour=0, minute=0, second=0
-        )
+        ) - datetime.timedelta(days=1)
         if datetime.datetime.fromisoformat(order.createdAt) < datetime_today:
             list_of_orders.append(order)
     return list_of_orders
