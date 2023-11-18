@@ -44,7 +44,7 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             new_orders = wb_order_service.get_new_orders(supply=supply)
             instance.amount = len(new_orders)
             if not new_orders:
-                raise Exception("There is no orders for this account and warehouse")
+                raise Exception("На данном аккаунте пока нет заказов :-(")
             instance.task_state = Status.ADD_ORDERS
             instance.save()
             print("new orders added")
