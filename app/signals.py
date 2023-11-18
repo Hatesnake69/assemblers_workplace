@@ -43,6 +43,8 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             supply = WbSupplyModel.objects.get(task=instance)
             new_orders = wb_order_service.get_new_orders(supply=supply)
             instance.amount = len(new_orders)
+            if not new_orders:
+                raise Exception("There is no orders for this account and warehouse")
             instance.task_state = Status.ADD_ORDERS
             instance.save()
             print("new orders added")
