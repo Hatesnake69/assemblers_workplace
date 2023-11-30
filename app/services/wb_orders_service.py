@@ -194,6 +194,7 @@ class WbOrdersService:
             bundle_or_product_from_ms = self.request_api.get(
                 url=f"{settings.get_product_info_url}/{order_product_ms_id}",
                 headers={
+                    "Accept - Encoding": "gzip",
                     "Content-Type": "application/json",
                     "charset": "UTF-8",
                     "Authorization": f"Bearer {settings.ms_token}",
@@ -209,6 +210,7 @@ class WbOrdersService:
         resp_from_ms = self.request_api.get(
             url=f"{settings.get_product_info_url}/{order_product_ms_id}",
             headers={
+                "Accept - Encoding": "gzip",
                 "Content-Type": "application/json",
                 "charset": "UTF-8",
                 "Authorization": f"Bearer {settings.ms_token}",
