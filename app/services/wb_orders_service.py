@@ -110,7 +110,11 @@ class WbOrdersService:
                     for ms_id in consists_dict:
                         order_product_quantity = int(consists_dict.get(ms_id))
                         self.create_order_product(
-                            ms_id, order_product_quantity, new_order, info_from_mapping
+                            ms_id=ms_id,
+                            order_product_quantity=order_product_quantity,
+                            new_order=new_order,
+                            info_from_mapping=info_from_mapping,
+                            ms_bundle_id=info_from_mapping.ms_id,
                         )
                     new_order.is_bundle = True
                     new_order.save()
@@ -118,7 +122,10 @@ class WbOrdersService:
                     ms_id = (info_from_mapping.ms_id,)
                     order_product_quantity = 1
                     self.create_order_product(
-                        ms_id, order_product_quantity, new_order, info_from_mapping
+                        ms_id=ms_id,
+                        order_product_quantity=order_product_quantity,
+                        new_order=new_order,
+                        info_from_mapping=info_from_mapping,
                     )
 
         return new_orders
@@ -183,6 +190,7 @@ class WbOrdersService:
         order_product_quantity,
         new_order: WbOrderModel,
         info_from_mapping: MappingResponse,
+        ms_bundle_id: str = None,
     ) -> None:
         if type(ms_id) == tuple:
             order_product_ms_id = ms_id[0]
@@ -192,7 +200,7 @@ class WbOrdersService:
             info_from_mapping.is_bundle and not new_order.packaging_class
         ) or not info_from_mapping.is_bundle:
             bundle_or_product_from_ms = self.request_api.get(
-                url=f"{settings.get_product_info_url}/{order_product_ms_id}",
+                url=f"{settings.get_product_info_url}/{ms_bundle_id}",
                 headers={
                     "Accept - Encoding": "gzip",
                     "Content-Type": "application/json",
