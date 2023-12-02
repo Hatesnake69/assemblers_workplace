@@ -200,7 +200,7 @@ class WbOrdersService:
             info_from_mapping.is_bundle and not new_order.packaging_class
         ):
             bundle_or_product_from_ms = self.request_api.get(
-                url=f"{settings.get_product_info_url}/{ms_bundle_id}",
+                url=f"{settings.get_bundle_info_url}/{ms_bundle_id}",
                 headers={
                     "Accept - Encoding": "gzip",
                     "Content-Type": "application/json",

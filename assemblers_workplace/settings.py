@@ -137,6 +137,8 @@ class Settings:
     post_wb_new_supply_url = os.getenv("POST_WB_NEW_SUPPLY_URL")
     get_mapping_url = os.getenv("GET_MAPPING_URL")
     get_product_info_url = os.getenv("GET_PRODUCT_INFO_URL")
+    get_bundle_info_url = os.getenv("GET_BUNDLE_INFO_URL")
+
 
     ms_token: str = os.getenv("MS_TOKEN")
 
