@@ -198,7 +198,7 @@ class WbOrdersService:
             order_product_ms_id = ms_id
         if (
             info_from_mapping.is_bundle and not new_order.packaging_class
-        ) or not info_from_mapping.is_bundle:
+        ):
             bundle_or_product_from_ms = self.request_api.get(
                 url=f"{settings.get_product_info_url}/{ms_bundle_id}",
                 headers={
@@ -226,6 +226,9 @@ class WbOrdersService:
             params={},
         )
         product_params = get_product_params(product_from_ms=resp_from_ms.json())
+        if not new_order.packaging_class:
+            new_order.packaging_class = product_params.packaging_class
+            new_order.save()
         WbOrderProductModel.objects.create(
             order=new_order,
             name=product_params.name,
