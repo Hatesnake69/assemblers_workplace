@@ -64,8 +64,8 @@ class WbOrdersService:
         new_orders = []
         for order in orders_from_wb_resp.orders:
             resp_from_mapping = self.request_api.get(
-                url=settings.get_mapping_url,
-                params={"nm_id": order.nmId},
+                url=f"{settings.get_mapping_url}?nm_id={order.nmId}",
+                params={},
                 headers={},
             ).json()
             if len(resp_from_mapping) == 0:
