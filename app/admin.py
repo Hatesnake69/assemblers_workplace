@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, AllowedIpModel, EmployeeModel
+from .models import WbSupplyModel, WbOrderModel, WbOrderProductModel, TaskModel, AllowedIpModel, EmployeeModel, \
+    FailedNmIdProductModel
 
 
 @admin.register(EmployeeModel)
@@ -102,3 +103,16 @@ class WbSupplyModelAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
+
+
+@admin.register(FailedNmIdProductModel)
+class FailedNmIdProductModelAdmin(admin.ModelAdmin):
+    list_display = (
+        "nm_id",
+        "name",
+        "wb_order_id",
+        "fixed",
+        "created_at",
+    )
+    list_filter = ("fixed",)
+

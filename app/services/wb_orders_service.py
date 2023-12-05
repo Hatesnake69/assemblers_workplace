@@ -3,7 +3,7 @@ import json
 
 import requests
 
-from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel
+from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
 from app.schemas.order_schemas import (
     OrdersResponseFromWb,
     MappingResponse,
@@ -69,7 +69,15 @@ class WbOrdersService:
                 headers={},
             ).json()
             if len(resp_from_mapping) == 0:
-                continue
+                try:
+                    FailedNmIdProductModel.objects.create(
+                        nm_id=order.nmId,
+                        name=order.article,
+                        wb_order_id=order.id,
+                        created_at=order.createdAt
+                    )
+                except:
+                    print("this failed nm_id already recorded")
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
             patch_req = self.request_api.patch(
                 url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",

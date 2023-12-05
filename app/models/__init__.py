@@ -6,3 +6,4 @@ from app.models.wb_supplies import WbSupplyModel
 from app.models.wb_order_products import WbOrderProductModel
 from app.models.employees import EmployeeModel
 from app.models.tasks import TaskModel
+from app.models.failed_nm_id_products import FailedNmIdProductModel
