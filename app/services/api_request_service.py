@@ -5,7 +5,7 @@ import requests
 
 
 class RequestAPI:
-    def get(self, url: str, headers: dict, params: dict, retries: int = 3, timeout: int = 5):
+    def get(self, url: str, headers: dict, params: dict, retries: int = 3, timeout: int = 10):
         counter = retries
         while counter > 0:
             print(f"making get request to url: {url}")
@@ -21,7 +21,7 @@ class RequestAPI:
             time.sleep(0.5)
         raise Exception(f"Возникла проблема при запросе к стороннему апи.")
 
-    def post(self, url: str, headers: dict, params: dict, body: dict, retries: int = 3, timeout: int = 5):
+    def post(self, url: str, headers: dict, params: dict, body: dict, retries: int = 3, timeout: int = 10):
         counter = retries
         while counter > 0:
             print(f"making post request to url: {url}")
@@ -38,7 +38,7 @@ class RequestAPI:
         raise Exception(f"Возникла проблема при запросе к стороннему апи.")
 
     def patch(
-        self, url: str, headers: dict, params: dict, body: dict, retries: int = 3, timeout: int = 5
+        self, url: str, headers: dict, params: dict, body: dict, retries: int = 3, timeout: int = 10
     ):
         counter = retries
         while counter > 0:
