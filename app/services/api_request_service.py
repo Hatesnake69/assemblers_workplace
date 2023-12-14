@@ -25,6 +25,7 @@ class RequestAPI:
         counter = retries
         while counter > 0:
             print(f"making post request to url: {url}")
+            print(f"headers: {headers}")
             try:
                 response = requests.post(url=url, headers=headers, params=params, json=body, timeout=timeout)
                 if response.ok:
