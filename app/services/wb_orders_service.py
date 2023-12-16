@@ -70,14 +70,18 @@ class WbOrdersService:
             ).json()
             if len(resp_from_mapping) == 0:
                 try:
-                    FailedNmIdProductModel.objects.create(
+                    print("there's failed nm_id product")
+                    new_failed_product = FailedNmIdProductModel(
                         nm_id=order.nmId,
                         name=order.article,
                         wb_order_id=order.id,
                         created_at=order.createdAt
                     )
+                    new_failed_product.save()
+                    print(f"new failed product: {new_failed_product}")
                 except:
                     print("this failed nm_id already recorded")
+                continue
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
             patch_req = self.request_api.patch(
                 url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
