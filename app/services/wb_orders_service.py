@@ -212,11 +212,13 @@ class WbOrdersService:
         supply: WbSupplyModel = None
     ) -> None:
         if not ms_bundle_id:
-            try:
-                already_existing_order = WbOrderModel.objects.get(supply=supply)
-                already_existing_order_product = WbOrderProductModel.objects.get(
-                    order=already_existing_order
-                )
+            already_existing_order = WbOrderModel.objects.filter(supply=supply).first()
+            already_existing_order_product = WbOrderProductModel.objects.filter(
+                order=already_existing_order
+            ).first()
+            if all(
+                (already_existing_order, already_existing_order_product)
+            ):
                 WbOrderProductModel.objects.create(
                     order=new_order,
                     name=already_existing_order_product.name,
@@ -226,11 +228,8 @@ class WbOrdersService:
                     code=already_existing_order_product.code,
                     storage_location=already_existing_order_product.storage_location,
                 )
-                return
-            except (
-                WbOrderProductModel.DoesNotExist, WbOrderModel.DoesNotExist
-            ):
-                pass
+
+
 
         if type(ms_id) == tuple:
             order_product_ms_id = ms_id[0]
