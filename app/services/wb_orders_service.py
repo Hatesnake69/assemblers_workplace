@@ -132,6 +132,7 @@ class WbOrdersService:
                             new_order=new_order,
                             info_from_mapping=info_from_mapping,
                             ms_bundle_id=info_from_mapping.ms_id,
+                            supply=supply,
                         )
                     new_order.is_bundle = True
                     new_order.save()
