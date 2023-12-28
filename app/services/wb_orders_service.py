@@ -212,7 +212,9 @@ class WbOrdersService:
         supply: WbSupplyModel = None
     ) -> None:
         if not ms_bundle_id:
-            already_existing_order = WbOrderModel.objects.filter(supply=supply).first()
+            already_existing_order = WbOrderModel.objects.filter(
+                supply=supply, wb_nm_id=new_order.wb_nm_id
+            ).first()
             already_existing_order_product = WbOrderProductModel.objects.filter(
                 order=already_existing_order
             ).first()
