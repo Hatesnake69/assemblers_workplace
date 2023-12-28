@@ -208,6 +208,22 @@ class WbOrdersService:
         info_from_mapping: MappingResponse,
         ms_bundle_id: str = None,
     ) -> None:
+        if not ms_bundle_id:
+            try:
+                already_existing_record = WbOrderProductModel.objects.get(order=new_order)
+                WbOrderProductModel.objects.create(
+                    order=new_order,
+                    name=already_existing_record.name,
+                    quantity=order_product_quantity,
+                    barcode=str(already_existing_record.barcode),
+                    photo=None,
+                    code=already_existing_record.code,
+                    storage_location=already_existing_record.storage_location,
+                )
+                return
+            except WbOrderProductModel.DoesNotExist:
+                pass
+
         if type(ms_id) == tuple:
             order_product_ms_id = ms_id[0]
         else:
