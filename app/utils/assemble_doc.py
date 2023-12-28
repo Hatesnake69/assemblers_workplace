@@ -186,8 +186,13 @@ def get_products_from_order(order: WbOrderModel) -> AssembleDocSchema:
 
 
 def fill_assemble_table(assemble_doc: AssembleDocSchema) -> str:
+
     res = ""
-    for index, product in enumerate(assemble_doc.map_of_products):
+    sorted_products = sorted(assemble_doc.map_of_products.items(), key=lambda item: item[1].storage_location)
+    sorted_assemble_doc = AssembleDocSchema(
+        map_of_products=dict(sorted_products)
+    )
+    for index, product in enumerate(sorted_assemble_doc.map_of_products):
         res += (
             f"<tr>"
             f"<td>{index+1}</td>"
