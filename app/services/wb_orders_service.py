@@ -125,6 +125,7 @@ class WbOrdersService:
                     consists_dict = json.loads(info_from_mapping.consist)
                     for ms_id in consists_dict:
                         order_product_quantity = int(consists_dict.get(ms_id))
+
                         self.create_order_product(
                             ms_id=ms_id,
                             order_product_quantity=order_product_quantity,
@@ -142,6 +143,7 @@ class WbOrdersService:
                         order_product_quantity=order_product_quantity,
                         new_order=new_order,
                         info_from_mapping=info_from_mapping,
+                        supply=supply,
                     )
 
         return new_orders
@@ -207,21 +209,27 @@ class WbOrdersService:
         new_order: WbOrderModel,
         info_from_mapping: MappingResponse,
         ms_bundle_id: str = None,
+        supply: WbSupplyModel = None
     ) -> None:
         if not ms_bundle_id:
             try:
-                already_existing_record = WbOrderProductModel.objects.get(order=new_order)
+                already_existing_order = WbOrderModel.objects.get(supply=supply)
+                already_existing_order_product = WbOrderProductModel.objects.get(
+                    order=already_existing_order
+                )
                 WbOrderProductModel.objects.create(
                     order=new_order,
-                    name=already_existing_record.name,
+                    name=already_existing_order_product.name,
                     quantity=order_product_quantity,
-                    barcode=str(already_existing_record.barcode),
+                    barcode=str(already_existing_order_product.barcode),
                     photo=None,
-                    code=already_existing_record.code,
-                    storage_location=already_existing_record.storage_location,
+                    code=already_existing_order_product.code,
+                    storage_location=already_existing_order_product.storage_location,
                 )
                 return
-            except WbOrderProductModel.DoesNotExist:
+            except (
+                WbOrderProductModel.DoesNotExist, WbOrderModel.DoesNotExist
+            ):
                 pass
 
         if type(ms_id) == tuple:
