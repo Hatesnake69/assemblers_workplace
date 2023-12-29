@@ -209,8 +209,8 @@ class WbOrdersService:
         order_product_quantity,
         new_order: WbOrderModel,
         info_from_mapping: MappingResponse,
+        supply: WbSupplyModel,
         ms_bundle_id: str = None,
-        supply: WbSupplyModel = None
     ) -> None:
         already_existing_order: WbOrderModel = WbOrderModel.objects.filter(
             supply=supply, wb_nm_id=new_order.wb_nm_id
@@ -218,20 +218,22 @@ class WbOrdersService:
         already_existing_order_products: list[WbOrderProductModel] = WbOrderProductModel.objects.filter(
             order=already_existing_order
         )
-        for existing_product in already_existing_order_products:
-            WbOrderProductModel.objects.create(
-                order=new_order,
-                name=existing_product.name,
-                quantity=order_product_quantity,
-                barcode=str(existing_product.barcode),
-                photo=None,
-                code=existing_product.code,
-                storage_location=existing_product.storage_location,
-            )
-        if already_existing_order_products:
-            new_order.packaging_class = already_existing_order.packaging_class
-            new_order.save()
-            return
+
+        if not ms_bundle_id:
+            for existing_product in already_existing_order_products:
+                WbOrderProductModel.objects.create(
+                    order=new_order,
+                    name=existing_product.name,
+                    quantity=order_product_quantity,
+                    barcode=str(existing_product.barcode),
+                    photo=None,
+                    code=existing_product.code,
+                    storage_location=existing_product.storage_location,
+                )
+            if already_existing_order_products:
+                new_order.packaging_class = already_existing_order.packaging_class
+                new_order.save()
+                return
 
         if type(ms_id) == tuple:
             order_product_ms_id = ms_id[0]
