@@ -74,7 +74,10 @@ class WbOrdersService:
             ).json()
             if len(resp_from_mapping) == 0:
                 try:
-                    print("there's failed nm_id product")
+                    already_existing_failed_product = FailedNmIdProductModel.objects.get(nm_id=str(order.nmId))
+                    print("this failed nm_id already recorded")
+
+                except FailedNmIdProductModel.DoesNotExist:
                     new_failed_product = FailedNmIdProductModel(
                         nm_id=order.nmId,
                         name=order.article,
@@ -83,8 +86,6 @@ class WbOrdersService:
                     )
                     new_failed_product.save()
                     print(f"new failed product: {new_failed_product}")
-                except:
-                    print("this failed nm_id already recorded")
                 continue
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
             patch_req = self.request_api.patch(
