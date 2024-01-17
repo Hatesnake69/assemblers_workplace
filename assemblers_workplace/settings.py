@@ -9,13 +9,14 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-import datetime
 import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import pytz as pytz
+import yaml
 from dotenv import load_dotenv
+from pydantic.dataclasses import dataclass
 
 load_dotenv()
 
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "app.ip_whitelist_middleware.WhitelistMiddleware",
 ]
 
 ROOT_URLCONF = "assemblers_workplace.urls"
@@ -104,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = "Europe/Moscow"
 
@@ -135,10 +137,41 @@ class Settings:
     post_wb_new_supply_url = os.getenv("POST_WB_NEW_SUPPLY_URL")
     get_mapping_url = os.getenv("GET_MAPPING_URL")
     get_product_info_url = os.getenv("GET_PRODUCT_INFO_URL")
+    get_bundle_info_url = os.getenv("GET_BUNDLE_INFO_URL")
+
 
     ms_token: str = os.getenv("MS_TOKEN")
 
 
+@dataclass
+class IpConfig:
+    name: str
+    ip: str
+
+
+@dataclass
+class AccountWarehouse:
+    name: str
+    id: str
+
+
+@dataclass
+class AccountConfig:
+    name: str
+    wb_token: str
+    warehouses: list[AccountWarehouse]
+
+
+@dataclass
+class Config:
+    allowed_ips: list[IpConfig]
+    accounts: list[AccountConfig]
+
+
+with open("config.yaml", "r", encoding="utf-8") as file:
+    config_data = yaml.safe_load(file)
+
+config = Config(**config_data)
 settings = Settings()
 
 DATABASES = {

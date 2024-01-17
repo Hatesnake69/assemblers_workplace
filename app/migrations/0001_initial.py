@@ -3,23 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 
-
-def create_employees(apps, scschema_editorhe):
-    EmployeeModel = apps.get_model("app", "EmployeeModel")
-    names = [
-        "Иван",
-        "Мария",
-        "Александр",
-        "Екатерина",
-        "Андрей",
-        "Ольга",
-        "Сергей",
-        "Анна",
-        "Дмитрий",
-        "Наталья",
-    ]
-    for name in names:
-        EmployeeModel.objects.create(name=name)
+from assemblers_workplace.settings import config
 
 
 def create_accounts(apps, schema_editor):
@@ -28,21 +12,12 @@ def create_accounts(apps, schema_editor):
     WbAccountWarehouseModel = apps.get_model("app", "WbAccountWarehouseModel")
     accounts = [
         {
-            "name": "BGD",
-            "wb_token": "geiogerilngerukhgukrhgkuerhg.ergierugwhu8hr823hisf.wefiwj",
+            "name": elem.name,
+            "wb_token": elem.wb_token,
             "warehouses": {
-                "Ryabinovaya": 7364583,
-                "Vnukovo": 545353,
-            },
-        },
-        {
-            "name": "ИП Камил",
-            "wb_token": "kgjerigjdsnniisunh89eww.ergierugwhu8hr8sdvdvs23hisf.wefssdvewg2iwj",
-            "warehouses": {
-                "Ryabinovaya": 584764586,
-                "Vnukovo": 4454234,
-            },
-        },
+                warehouse.name: warehouse.id for warehouse in elem.warehouses
+            }
+        } for elem in config.accounts
     ]
     for account in accounts:
         business_account, created = WbBusinessAccountModel.objects.get_or_create(
@@ -325,6 +300,5 @@ class Migration(migrations.Migration):
                 "db_table": "tasks",
             },
         ),
-        migrations.RunPython(create_employees),
         migrations.RunPython(create_accounts),
     ]

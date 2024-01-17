@@ -2,9 +2,11 @@ version: "3.7"
 
 services:
 
-  db:
-    container_name: db
+  assemblers_db:
+    container_name: assemblers_db
     image: "postgres:13-alpine"
+    volumes:
+      - ./.docker/postgres/data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DATABASES=${POSTGRES_NAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -13,8 +15,10 @@ services:
       my_api_network:
 
 
-  django_app:
-    container_name: django_app
+  assemblers_app:
+    volumes:
+      - ./media:/app/media
+    container_name: assemblers_app
     build: ./
     command: sh -c "python manage.py collectstatic --noinpu && python manage.py migrate && uvicorn assemblers_workplace.asgi:application --host 0.0.0.0 --port ${API_PORT}"
       - ./:/usr/src/app/

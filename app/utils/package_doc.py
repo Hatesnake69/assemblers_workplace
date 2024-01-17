@@ -6,14 +6,11 @@ import weasyprint
 from app.models import WbOrderModel, WbOrderProductModel
 
 
-def create_assemblers_page_html(task_instance, supply_instance):
+def create_package_doc(task_instance, supply_instance):
     row_headers = (
         "Номер заказа",
         "Наименование товара",
         "Комплект",
-        "Код",
-        "Место на складе",
-        "Штрихкоды (родные)",
         "Класс упаковки",
         "Штрихкод WB",
         "QR-код WB",
@@ -36,7 +33,7 @@ def create_assemblers_page_html(task_instance, supply_instance):
     for header in row_headers:
         table += f"<th>{header}</th>"
     table += "</tr>"
-    for order in WbOrderModel.objects.filter(supply=supply_instance).all():
+    for order in WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all():
         table += fill_order_row(
             order=order
         )
@@ -50,20 +47,26 @@ def create_assemblers_page_html(task_instance, supply_instance):
 <meta charset="UTF-8">
 <style>
     @page {{
-        size: A4 landscape;
+        size: A4;
         margin: 0.5cm;
         margin-bottom: 20mm;
         margin-top: 20mm;
         @top-right {{
-        content: "Page " counter(page) " of " counter(pages);
-    }}
-    }}
+            content: "Стр. " counter(page) " из " counter(pages);
+        }}
+        @top-center:first {{
+            content: "Упаковочный лист";
+            font-size: 20px;
+            color: #333; /* Цвет по вашему выбору */
+            }}
+        }}
     body {{
-        font-size: 12px;
+        font-size: 12px !important;
     }}
     table {{
+        page-break-inside: auto;
         border-collapse: collapse;
-        width: 270mm;
+        width: 190mm;
     }}
     .outer-table th,
     .outer-table td {{
@@ -76,6 +79,10 @@ def create_assemblers_page_html(task_instance, supply_instance):
         padding-top: 4px;
         padding-bottom: 4px;
     }}
+    tr {{
+        page-break-inside:avoid; 
+        page-break-after:auto
+    }}
     th {{
         background-color: #333; /* Используйте нужный вам темно-серый цвет */
         color: #fff; /* Установите белый цвет текста для лучшей видимости */
@@ -87,9 +94,6 @@ def create_assemblers_page_html(task_instance, supply_instance):
     .product-row {{
         padding-left: 20px !important; /* Левый отступ в 10px */
         text-align: left !important;
-    }}
-    .last-four {{
-        font-size: 20px; /* Размер шрифта для последних четырех цифр */
     }}
 </style>
 </head>
@@ -105,7 +109,7 @@ def create_assemblers_page_html(task_instance, supply_instance):
     pdf_buffer = io.BytesIO()
     weasyprint.HTML(string=html_template).write_pdf(pdf_buffer)
     pdf_buffer.seek(0)
-    with open("pidor.html", "w+", encoding="utf-8") as file:
+    with open("package_doc.html", "w+", encoding="utf-8") as file:
         file.write(html_template)
 
     return pdf_buffer
@@ -135,7 +139,7 @@ def fill_order_row(order: WbOrderModel):
     table = ""
     if not order.is_bundle:
         order_product: WbOrderProductModel
-        order_product = WbOrderProductModel.objects.filter(order=order).first()
+        order_product = WbOrderProductModel.objects.filter(order=order).order_by('id').first()
         barcodes = re.findall(r"\d{5,}", order_product.barcode)
         if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
             barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
@@ -147,37 +151,29 @@ def fill_order_row(order: WbOrderModel):
             f"<td>{order.wb_id}</td>"
             f"<td>{order_product.name}</td>"
             f"<td>{'Не комплект'}</td>"
-            f"<td>{order_product.code}</td>"
-            f"<td>{order_product.storage_location}</td>"
-            f"<td>{formatted_barcodes or '-'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td style='white-space: nowrap;'>{wb_qr[:-4]} <b>{wb_qr[-4:]}</b></td>"
             f"</tr>"
         )
     else:
         order_products: list[WbOrderProductModel]
-        order_products = WbOrderProductModel.objects.filter(order=order).all()
+        order_products = WbOrderProductModel.objects.filter(order=order).order_by('id').all()
         bundle_property = "комплект простой" if len(order_products) == 1 else "комплект сложный"
         wb_skus = order.wb_skus.replace('[', '').replace(']', '')
         wb_qr = str(order.partA) + str(order.partB)
         table += (
             f"<tr>"
             f"<td>{order.wb_id}</td>"
-            f"<td style='text-align: center !important;'><strong>КОМПЛЕКТ:</strong><br>{' + '.join([order_product.name for order_product in order_products])}</td>"
+            f"<td><strong>КОМПЛЕКТ:</strong></td>"
             f"<td>{bundle_property}</td>"
-            f"<td>{'-'}</td>"
-            f"<td>{'-'}</td>"
-            f"<td>{'-'}</td>"
             f"<td>{order.packaging_class}</td>"
             f"<td>{wb_skus}</td>"
-            f"<td>{wb_qr[0:-4]} <b><span class='last-four'>{wb_qr[-4:]}</span></b></td>"
+            f"<td style='white-space: nowrap;'>{wb_qr[:-4]} <b>{wb_qr[-4:]}</b></td>"
             f"</tr>"
         )
         for order_product in order_products:
             barcodes = re.findall(r"\d{5,}", order_product.barcode)
-            print(barcodes)
-            print(order.wb_skus)
             if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
                 barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
             formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
@@ -187,9 +183,6 @@ def fill_order_row(order: WbOrderModel):
                 f"<td></td>"
                 f"<td class='product-row'>{order_product.name}</td>"
                 f"<td>{order_product.quantity} шт.</td>"
-                f"<td>{order_product.code}</td>"
-                f"<td>{order_product.storage_location}</td>"
-                f"<td>{formatted_barcodes}</td>"
                 f"<td>{'-'}</td>"
                 f"<td>{'-'}</td>"
                 f"<td>{'-'}</td>"
