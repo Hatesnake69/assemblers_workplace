@@ -42,7 +42,7 @@ class RequestAPI:
     ):
         counter = retries
         while counter > 0:
-            print(f"making post request to url: {url}")
+            print(f"making patch request to url: {url}")
             try:
                 response = requests.patch(
                     url=url, headers=headers, params=params, json=body, timeout=timeout

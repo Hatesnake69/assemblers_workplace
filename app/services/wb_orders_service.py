@@ -1,7 +1,4 @@
-import datetime
 import json
-
-import requests
 
 from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
 from app.schemas.order_schemas import (
@@ -12,6 +9,7 @@ from app.schemas.order_schemas import (
     WbOrderStickersResponse,
 )
 from app.services.api_request_service import RequestAPI
+from app.services.partition_service import get_prior_partition
 from assemblers_workplace.settings import settings
 
 
@@ -55,13 +53,7 @@ class WbOrdersService:
         orders_from_wb_resp = filter_by_warehouse(
             chunk_of_orders=orders_from_wb_resp, wb_warehouse_id=self.warehouse_id
         )
-        orders_not_for_yesterday = get_orders_not_for_yesterday(orders_from_wb_resp)
-        if orders_not_for_yesterday:
-            orders_from_wb_resp.orders = orders_not_for_yesterday
-        else:
-            orders_not_for_today = get_orders_not_for_today(orders_from_wb_resp)
-            if orders_not_for_today:
-                orders_from_wb_resp.orders = orders_not_for_today
+        orders_from_wb_resp.orders = get_prior_partition(orders_from_wb_resp)
         orders_from_wb_resp.orders = group_same_orders(
             chunk_of_orders=orders_from_wb_resp, limit=self.amount
         )
@@ -74,7 +66,7 @@ class WbOrdersService:
             ).json()
             if len(resp_from_mapping) == 0:
                 try:
-                    already_existing_failed_product = FailedNmIdProductModel.objects.get(nm_id=str(order.nmId))
+                    FailedNmIdProductModel.objects.get(nm_id=str(order.nmId))
                     print("this failed nm_id already recorded")
 
                 except FailedNmIdProductModel.DoesNotExist:
@@ -293,28 +285,6 @@ def filter_by_warehouse(
             list_of_orders.append(order)
 
     return OrdersResponseFromWb(orders=list_of_orders)
-
-
-def get_orders_not_for_today(chunk_of_orders: OrdersResponseFromWb):
-    list_of_orders = []
-    for order in chunk_of_orders.orders:
-        datetime_today = datetime.datetime.now(tz=settings.timezone).replace(
-            hour=0, minute=0, second=0
-        ) - datetime.timedelta(days=1)
-        if datetime.datetime.fromisoformat(order.createdAt) < datetime_today:
-            list_of_orders.append(order)
-    return list_of_orders
-
-
-def get_orders_not_for_yesterday(chunk_of_orders: OrdersResponseFromWb):
-    list_of_orders = []
-    for order in chunk_of_orders.orders:
-        datetime_today = datetime.datetime.now(tz=settings.timezone).replace(
-            hour=0, minute=0, second=0
-        ) - datetime.timedelta(days=2)
-        if datetime.datetime.fromisoformat(order.createdAt) < datetime_today:
-            list_of_orders.append(order)
-    return list_of_orders
 
 
 def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
