@@ -32,9 +32,6 @@ def form_partition(interval_name: str, orders_from_wb_resp: OrdersResponseFromWb
         date_to_compare = yesterday
     elif "rest" in interval_name:
         date_to_compare = day_before_yesterday
-        print("hey")
-        print(date_to_compare)
-        print("hey")
         return [order for order in orders_from_wb_resp.orders if (
             date_to_compare.date() >= datetime.datetime.fromisoformat(order.createdAt).date()
         )]
