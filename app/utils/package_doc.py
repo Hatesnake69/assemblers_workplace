@@ -174,8 +174,6 @@ def fill_order_row(order: WbOrderModel):
         )
         for order_product in order_products:
             barcodes = re.findall(r"\d{5,}", order_product.barcode)
-            print(barcodes)
-            print(order.wb_skus)
             if order.wb_skus.replace("[", "").replace("]", "") in barcodes:
                 barcodes.remove(order.wb_skus.replace("[", "").replace("]", ""))
             formatted_barcodes = re.sub(r'[^\w\s,]', '', str(barcodes))
