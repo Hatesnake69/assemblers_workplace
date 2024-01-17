@@ -168,7 +168,7 @@ class Config:
     accounts: list[AccountConfig]
 
 
-with open("config.yaml", "r") as file:
+with open("config.yaml", "r", encoding="utf-8") as file:
     config_data = yaml.safe_load(file)
 
 config = Config(**config_data)
