@@ -10,6 +10,7 @@ map_of_intervals = {
     "yesterday_00-16": (datetime.time(0, 0), datetime.time(15, 59, 59)),
     "day_before_yesterday_16-24": (datetime.time(16, 0), datetime.time(23, 59, 59)),
     "day_before_yesterday_00-16": (datetime.time(0, 0), datetime.time(15, 59, 59)),
+    "two_days_before_yesterday": (datetime.time(0, 0), datetime.time(23, 59, 59)),
     "rest": (datetime.time(0, 0), datetime.time(23, 59, 59)),
 }
 
@@ -23,15 +24,18 @@ def form_partition(interval_name: str, orders_from_wb_resp: OrdersResponseFromWb
     )
     yesterday = today - datetime.timedelta(days=1)
     day_before_yesterday = today - datetime.timedelta(days=2)
+    two_days_before_yesterday = today - datetime.timedelta(days=3)
 
     if "today" in interval_name:
         date_to_compare = today
     elif "day_before_yesterday" in interval_name:
         date_to_compare = day_before_yesterday
+    elif "two_days_before_yesterday" in interval_name:
+        date_to_compare = two_days_before_yesterday
     elif "yesterday" in interval_name:
         date_to_compare = yesterday
     elif "rest" in interval_name:
-        date_to_compare = day_before_yesterday
+        date_to_compare = two_days_before_yesterday
         return [order for order in orders_from_wb_resp.orders if (
             date_to_compare.date() >= datetime.datetime.fromisoformat(order.createdAt).date()
         )]
@@ -48,12 +52,13 @@ def form_partition(interval_name: str, orders_from_wb_resp: OrdersResponseFromWb
 def get_prior_partition(orders_from_wb_resp: OrdersResponseFromWb) -> list[OrderFromWb]:
     intervals_tuple = [
         "rest",
-        "today_16-24",
-        "today_00-16",
-        "yesterday_16-24",
-        "yesterday_00-16",
-        "day_before_yesterday_16-24",
+        "two_days_before_yesterday",
         "day_before_yesterday_00-16",
+        "day_before_yesterday_16-24",
+        "yesterday_00-16",
+        "yesterday_16-24",
+        "today_00-16",
+        "today_16-24",
     ]
     for interval in intervals_tuple:
         orders = form_partition(
