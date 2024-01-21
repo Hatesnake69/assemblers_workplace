@@ -22,7 +22,7 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
     if created:
         amount = instance.amount
         current_account = instance.business_account
-        account_warehouse = WbAccountWarehouseModel.objects.get(
+        account_warehouse: WbAccountWarehouseModel = WbAccountWarehouseModel.objects.get(
             business_account=instance.business_account,
             warehouse=instance.warehouse,
         )
@@ -42,7 +42,10 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         new_orders = wb_order_service.get_new_orders(supply=supply)
         instance.amount = len(new_orders)
         if not new_orders:
-            raise Exception("На данном аккаунте пока нет заказов :-(")
+            raise Exception(
+                f"На складе {account_warehouse.warehouse.name} "
+                f"аккаунта {current_account.name} пока нет заказов :-("
+            )
         instance.task_state = Status.ADD_ORDERS
         instance.save()
         print("new orders added")
