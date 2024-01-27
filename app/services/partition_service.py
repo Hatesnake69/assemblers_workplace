@@ -49,7 +49,7 @@ def form_partition(interval_name: str, orders_from_wb_resp: OrdersResponseFromWb
     ]
 
 
-def get_prior_partition(orders_from_wb_resp: OrdersResponseFromWb) -> list[OrderFromWb]:
+def get_orders_partitions(orders_from_wb_resp: OrdersResponseFromWb) -> list[list[OrderFromWb]]:
     intervals_tuple = [
         "rest",
         "two_days_before_yesterday",
@@ -60,12 +60,26 @@ def get_prior_partition(orders_from_wb_resp: OrdersResponseFromWb) -> list[Order
         "today_00-16",
         "today_16-24",
     ]
+    res = []
     for interval in intervals_tuple:
         orders = form_partition(
             interval_name=interval, orders_from_wb_resp=orders_from_wb_resp
         )
         if orders:
-            return orders
-    return []
+            res.append(orders)
+    return res
 
 
+def fill_task_with_orders(
+    orders_partitions: list[list[OrderFromWb]], amount: int
+) -> list[OrderFromWb]:
+    index = 0
+    res = []
+    while amount > 0:
+        try:
+            res += orders_partitions[index]
+            amount -= len(orders_partitions[index])
+            index += 1
+        except IndexError:
+            return res
+    return res

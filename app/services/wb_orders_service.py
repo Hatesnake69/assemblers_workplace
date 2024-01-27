@@ -9,7 +9,7 @@ from app.schemas.order_schemas import (
     WbOrderStickersResponse,
 )
 from app.services.api_request_service import RequestAPI
-from app.services.partition_service import get_prior_partition
+from app.services.partition_service import get_orders_partitions, fill_task_with_orders
 from assemblers_workplace.settings import settings
 
 
@@ -53,7 +53,10 @@ class WbOrdersService:
         orders_from_wb_resp = filter_by_warehouse(
             chunk_of_orders=orders_from_wb_resp, wb_warehouse_id=self.warehouse_id
         )
-        orders_from_wb_resp.orders = get_prior_partition(orders_from_wb_resp)
+        orders_partitions = get_orders_partitions(orders_from_wb_resp)
+        orders_from_wb_resp.orders = fill_task_with_orders(
+            orders_partitions=orders_partitions, amount=self.amount
+        )
         orders_from_wb_resp.orders = group_same_orders(
             chunk_of_orders=orders_from_wb_resp, limit=self.amount
         )
