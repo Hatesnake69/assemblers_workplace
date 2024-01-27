@@ -77,7 +77,7 @@ def fill_task_with_orders(
     res = []
     while amount > 0:
         try:
-            res += orders_partitions[index]
+            res += orders_partitions[index][0:amount]
             amount -= len(orders_partitions[index])
             index += 1
         except IndexError:
