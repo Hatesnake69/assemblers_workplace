@@ -18,6 +18,9 @@ class WbAccountWarehouseModel(models.Model):
         on_delete=models.CASCADE,
         related_name="wb_account_warehouses",
     )
+    processing_flag = models.BooleanField(
+        default=False
+    )
 
     class Meta:
         # Указывает имя таблицы в базе данных
@@ -25,3 +28,11 @@ class WbAccountWarehouseModel(models.Model):
 
     def __str__(self):
         return f"{self.business_account}, {self.warehouse}"
+
+    def set_processing(self):
+        self.processing_flag = True
+        self.save()
+
+    def set_idle(self):
+        self.processing_flag = False
+        self.save()
