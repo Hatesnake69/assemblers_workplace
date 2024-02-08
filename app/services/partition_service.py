@@ -63,6 +63,8 @@ def fill_task_with_orders(
 ) -> list[OrderFromWb]:
     index = 0
     res = []
+    if amount < len(orders_partitions[0]):
+        return orders_partitions[0]
     while amount > 0:
         try:
             res += orders_partitions[index][0:amount]

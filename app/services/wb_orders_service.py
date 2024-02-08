@@ -59,7 +59,6 @@ class WbOrdersService:
         print(orders_partitions[0][0])
         print(orders_partitions[0][-1])
         print("@@@@@")
-
         orders_from_wb_resp.orders = fill_task_with_orders(
             orders_partitions=orders_partitions, amount=self.amount
         )
