@@ -55,13 +55,14 @@ class WbOrdersService:
             chunk_of_orders=orders_from_wb_resp, wb_warehouse_id=self.warehouse_id
         )
         orders_partitions = get_orders_partitions(orders_from_wb_resp)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(orders_partitions[0][0].createdAt)
-        print(orders_partitions[0][-1].createdAt)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!")
+
         orders_from_wb_resp.orders = fill_task_with_orders(
             orders_partitions=orders_partitions, amount=self.amount
         )
+        print("!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(orders_from_wb_resp.orders[0].createdAt)
+        print(orders_from_wb_resp.orders[-1].createdAt)
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!")
         orders_from_wb_resp.orders = group_same_orders(
             chunk_of_orders=orders_from_wb_resp, limit=self.amount
         )
