@@ -69,5 +69,7 @@ def fill_task_with_orders(
             amount -= len(orders_partitions[index])
             index += 1
         except IndexError:
+            print(res)
             return res
+    print(res)
     return res
