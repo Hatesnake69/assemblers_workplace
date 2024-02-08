@@ -300,8 +300,8 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
         else:
             dict_of_orders[order.nmId]["orders"].append(order)
             dict_of_orders[order.nmId]["len"] += 1
-    first_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["elem"] > 1]
-    second_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["elem"] == 1]
+    first_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["len"] > 1]
+    second_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["len"] == 1]
 
 
     first_list_of_grouped_orders = sorted(
