@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
@@ -309,9 +310,10 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
     )
 
     second_list_of_grouped_orders = sorted(
-        second_half_orders, key=lambda x: x["orders"][0].createdAt, reverse=True
+        second_half_orders,
+        key=lambda x: datetime.datetime.fromisoformat(x["orders"][0].createdAt),
+        reverse=False
     )
-
     for elem in first_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     for elem in second_list_of_grouped_orders:
