@@ -55,10 +55,6 @@ class WbOrdersService:
             chunk_of_orders=orders_from_wb_resp, wb_warehouse_id=self.warehouse_id
         )
         orders_partitions = get_orders_partitions(orders_from_wb_resp)
-        print("@@@@@")
-        print(orders_partitions[0][0])
-        print(orders_partitions[0][-1])
-        print("@@@@@")
         orders_from_wb_resp.orders = fill_task_with_orders(
             orders_partitions=orders_partitions, amount=self.amount
         )
@@ -298,10 +294,6 @@ def filter_by_warehouse(
 def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
     list_of_orders = []
     dict_of_orders = {}
-    print("??????????????????")
-    print(chunk_of_orders.orders)
-    print("??????????????????")
-
     for order in chunk_of_orders.orders:
         if not dict_of_orders.get(order.nmId):
             dict_of_orders[order.nmId] = {"orders": [order], "len": 1}
@@ -311,30 +303,19 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
             dict_of_orders[order.nmId]["len"] += 1
     first_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if dict_of_orders[elem]["len"] > 1]
     second_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if dict_of_orders[elem]["len"] == 1]
-
-
     first_list_of_grouped_orders = sorted(
         first_half_orders, key=lambda x: x["len"], reverse=True
     )
-    print(first_list_of_grouped_orders)
-
     second_list_of_grouped_orders = sorted(
         second_half_orders,
         key=lambda x: datetime.datetime.fromisoformat(x["orders"][0].createdAt),
         reverse=False
     )
-
-    print("!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(second_list_of_grouped_orders[0]["orders"][0].createdAt)
-    print(second_list_of_grouped_orders[-1]["orders"][0].createdAt)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!")
-
     for elem in first_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     for elem in second_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     res = list_of_orders[0:limit]
-    print(res)
     return res
 
 
