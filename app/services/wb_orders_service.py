@@ -59,10 +59,6 @@ class WbOrdersService:
         orders_from_wb_resp.orders = fill_task_with_orders(
             orders_partitions=orders_partitions, amount=self.amount
         )
-        print("!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(orders_from_wb_resp.orders[0].createdAt)
-        print(orders_from_wb_resp.orders[-1].createdAt)
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!")
         orders_from_wb_resp.orders = group_same_orders(
             chunk_of_orders=orders_from_wb_resp, limit=self.amount
         )
@@ -313,12 +309,19 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
     first_list_of_grouped_orders = sorted(
         first_half_orders, key=lambda x: x["len"], reverse=True
     )
+    print(first_list_of_grouped_orders)
 
     second_list_of_grouped_orders = sorted(
         second_half_orders,
         key=lambda x: datetime.datetime.fromisoformat(x["orders"][0].createdAt),
         reverse=True
     )
+
+    print("!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(second_list_of_grouped_orders[0]["orders"][0].createdAt)
+    print(second_list_of_grouped_orders[-1]["orders"][0].createdAt)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!")
+
     for elem in first_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     for elem in second_list_of_grouped_orders:
