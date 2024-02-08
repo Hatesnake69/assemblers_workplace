@@ -300,11 +300,21 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
         else:
             dict_of_orders[order.nmId]["orders"].append(order)
             dict_of_orders[order.nmId]["len"] += 1
-    list_of_grouped_orders = [dict_of_orders.get(elem) for elem in dict_of_orders]
-    list_of_grouped_orders = sorted(
-        list_of_grouped_orders, key=lambda x: x["len"], reverse=True
+    first_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["elem"] > 1]
+    second_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if elem["elem"] == 1]
+
+
+    first_list_of_grouped_orders = sorted(
+        first_half_orders, key=lambda x: x["len"], reverse=True
     )
-    for elem in list_of_grouped_orders:
+
+    second_list_of_grouped_orders = sorted(
+        second_half_orders, key=lambda x: x["orders"][0].createdAt
+    )
+
+    for elem in first_list_of_grouped_orders:
+        list_of_orders += elem.get("orders")
+    for elem in second_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     res = list_of_orders[0:limit]
     return res
