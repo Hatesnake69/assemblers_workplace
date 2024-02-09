@@ -84,6 +84,11 @@ class WbOrdersService:
                     print(f"new failed product: {new_failed_product}")
                 continue
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
+            try:
+                WbOrderModel.objects.get(wb_id=str(order.id))
+                continue
+            except WbOrderModel.DoesNotExist:
+                pass
             patch_req = self.request_api.patch(
                 url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
                 headers={
