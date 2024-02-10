@@ -26,6 +26,9 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
             business_account=instance.business_account,
             warehouse=instance.warehouse,
         )
+        if account_warehouse.processing_flag:
+            raise Exception(f"На данном аккаунте уже формируется задание. Пожалуйста, подождите.")
+        account_warehouse.set_processing()
         wb_token = current_account.wb_token
         wb_order_service = WbOrdersService(
             wb_token=wb_token, amount=amount, warehouse_id=account_warehouse.wb_id
@@ -93,6 +96,7 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         )
         instance.save()
         print("supply sent")
+        account_warehouse.set_idle()
     if instance.task_state == Status.GET_SUPPLY_STICKER.value:
         instance.task_state = Status.CLOSE
         instance.is_active = False

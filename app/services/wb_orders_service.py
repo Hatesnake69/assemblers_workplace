@@ -72,7 +72,6 @@ class WbOrdersService:
                 try:
                     FailedNmIdProductModel.objects.get(nm_id=str(order.nmId))
                     print("this failed nm_id already recorded")
-
                 except FailedNmIdProductModel.DoesNotExist:
                     new_failed_product = FailedNmIdProductModel(
                         nm_id=order.nmId,
@@ -342,3 +341,12 @@ def get_product_params(product_from_ms: dict) -> ProductParamsFromMs:
         packaging_class=packaging_class,
         warehouse_place=warehouse_place,
     )
+
+
+def check_if_order_was_already_recorded(order_id) -> bool:
+    try:
+        WbOrderModel.objects.get(wb_id=order_id)
+        print(f"this order already was recorder wb_id: {order_id}")
+        return True
+    except WbOrderModel.DoesNotExist:
+        return False
