@@ -19,29 +19,25 @@ from .utils.package_doc import create_package_doc
 
 @receiver(post_save, sender=TaskModel)
 def create_task(sender, instance: TaskModel, created, **kwargs):
+    amount = instance.amount
+    current_account = instance.business_account
+    account_warehouse: WbAccountWarehouseModel = WbAccountWarehouseModel.objects.get(
+        business_account=instance.business_account,
+        warehouse=instance.warehouse,
+    )
+    wb_token = current_account.wb_token
+    wb_order_service = WbOrdersService(
+        wb_token=wb_token, amount=amount, warehouse_id=account_warehouse.wb_id
+    )
+    moscow_time = instance.created_at + datetime.timedelta(hours=3)
     if created:
-        amount = instance.amount
-        current_account = instance.business_account
-        account_warehouse: WbAccountWarehouseModel = WbAccountWarehouseModel.objects.get(
-            business_account=instance.business_account,
-            warehouse=instance.warehouse,
-        )
-        if account_warehouse.processing_flag:
-            raise Exception(f"На данном аккаунте уже формируется задание. Пожалуйста, подождите.")
-        account_warehouse.set_processing()
-        wb_token = current_account.wb_token
-        wb_order_service = WbOrdersService(
-            wb_token=wb_token, amount=amount, warehouse_id=account_warehouse.wb_id
-        )
-        moscow_time = instance.created_at + datetime.timedelta(hours=3)
         supply_name = (
             f"{instance.employee} {moscow_time.strftime('%Y-%m-%d %H:%M')}"
         )
-        new_supply = wb_order_service.create_new_supply(name=supply_name, task=instance)
+        supply = wb_order_service.create_new_supply(name=supply_name, task=instance)
         instance.task_state = Status.CREATE_SUPPLY
         instance.save()
         print("new supply created")
-        supply = WbSupplyModel.objects.get(task=instance)
         new_orders = wb_order_service.get_new_orders(supply=supply)
         instance.amount = len(new_orders)
         if not new_orders:
@@ -52,7 +48,6 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         instance.task_state = Status.ADD_ORDERS
         instance.save()
         print("new orders added")
-        supply = WbSupplyModel.objects.get(task=instance)
         new_orders = [order for order in WbOrderModel.objects.filter(supply=supply)]
         batch_size = 100
         for orders_batch in (new_orders[i:i + batch_size] for i in range(0, len(new_orders), batch_size)):
@@ -66,10 +61,12 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         instance.save()
         print("orders stickers received")
         supply = WbSupplyModel.objects.get(task=instance)
-        wb_order_service.get_supply_sticker(supply=supply)
+        try:
+            wb_order_service.get_supply_sticker(supply=supply)
+        except:
+            return
         instance.task_state = Status.GET_SUPPLY_STICKER
         instance.save()
-        supply = WbSupplyModel.objects.get(task=instance)
         assembler_document_pdf = create_assemble_doc(
             task_instance=instance, supply_instance=supply
         )
@@ -96,7 +93,42 @@ def create_task(sender, instance: TaskModel, created, **kwargs):
         )
         instance.save()
         print("supply sent")
-        account_warehouse.set_idle()
+
+    if instance.task_state == Status.SEND_SUPPLY_TO_DELIVER.value:
+        supply = WbSupplyModel.objects.get(task=instance)
+        try:
+            wb_order_service.get_supply_sticker(supply=supply)
+        except:
+            return
+        instance.task_state = Status.GET_SUPPLY_STICKER
+        instance.save()
+        assembler_document_pdf = create_assemble_doc(
+            task_instance=instance, supply_instance=supply
+        )
+        instance.assembler_document.save(
+            f"{instance.id}_assemble_document.pdf", ContentFile(assembler_document_pdf.read())
+        )
+        package_document_pdf = create_package_doc(
+            task_instance=instance, supply_instance=supply
+        )
+        instance.package_document.save(
+            f"{instance.id}_package_document.pdf", ContentFile(package_document_pdf.read())
+        )
+        qr_pdf = create_wb_orders_qr_pdf(task_instance=instance)
+        instance.wb_order_qr_document.save(
+            f"{instance.id}_qr_stickers.pdf", ContentFile(qr_pdf.read())
+        )
+        supply_qr = create_wb_supply_qr_pdf(task_instance=instance)
+        instance.wb_supply_qr_document.save(
+            f"{instance.id}_supply_qr.pdf", ContentFile(supply_qr.read())
+        )
+        barcodes_pdf = create_stickers_pdf(task_instance=instance)
+        instance.wb_order_stickers_document.save(
+            f"{instance.id}_sku_stickers_qr.pdf", ContentFile(barcodes_pdf.read())
+        )
+        instance.save()
+        print("supply sent")
+
     if instance.task_state == Status.GET_SUPPLY_STICKER.value:
         instance.task_state = Status.CLOSE
         instance.is_active = False
