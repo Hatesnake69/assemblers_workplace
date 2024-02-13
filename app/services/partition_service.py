@@ -30,7 +30,6 @@ def form_partition(interval_name: str, orders_from_wb_resp: OrdersResponseFromWb
     elif "rest" in interval_name:
         date_to_compare = day_before_yesterday
 
-        # date_to_compare = two_days_before_yesterday
         return [order for order in orders_from_wb_resp.orders if (
             date_to_compare.date() >= datetime.datetime.fromisoformat(order.createdAt).date()
         )]
@@ -64,6 +63,8 @@ def fill_task_with_orders(
 ) -> list[OrderFromWb]:
     index = 0
     res = []
+    if amount < len(orders_partitions[0]):
+        return orders_partitions[0]
     while amount > 0:
         try:
             res += orders_partitions[index][0:amount]

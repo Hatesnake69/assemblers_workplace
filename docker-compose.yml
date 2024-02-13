@@ -7,6 +7,7 @@ services:
     image: "postgres:13-alpine"
     volumes:
       - ./.docker/postgres/data:/var/lib/postgresql/data
+    restart: unless-stopped
     environment:
       - POSTGRES_DATABASES=${POSTGRES_NAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -19,6 +20,7 @@ services:
     volumes:
       - ./media:/app/media
     container_name: assemblers_app
+    restart: unless-stopped
     build: ./
     command: sh -c "python manage.py collectstatic --noinpu && python manage.py migrate && uvicorn assemblers_workplace.asgi:application --host 0.0.0.0 --port ${API_PORT}"
       - ./:/usr/src/app/

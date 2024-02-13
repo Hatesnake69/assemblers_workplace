@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
@@ -82,8 +83,11 @@ class WbOrdersService:
                     print(f"new failed product: {new_failed_product}")
                 continue
             info_from_mapping = MappingResponse.parse_obj(resp_from_mapping[0])
-            if check_if_order_was_already_recorded(order.id):
+            try:
+                WbOrderModel.objects.get(wb_id=str(order.id))
                 continue
+            except WbOrderModel.DoesNotExist:
+                pass
             patch_req = self.request_api.patch(
                 url=f"https://suppliers-api.wildberries.ru/api/v3/supplies/{supply.wb_id}/orders/{order.id}",
                 headers={
@@ -301,11 +305,19 @@ def group_same_orders(chunk_of_orders: OrdersResponseFromWb, limit: int):
         else:
             dict_of_orders[order.nmId]["orders"].append(order)
             dict_of_orders[order.nmId]["len"] += 1
-    list_of_grouped_orders = [dict_of_orders.get(elem) for elem in dict_of_orders]
-    list_of_grouped_orders = sorted(
-        list_of_grouped_orders, key=lambda x: x["len"], reverse=True
+    first_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if dict_of_orders[elem]["len"] > 1]
+    second_half_orders = [dict_of_orders.get(elem) for elem in dict_of_orders if dict_of_orders[elem]["len"] == 1]
+    first_list_of_grouped_orders = sorted(
+        first_half_orders, key=lambda x: x["len"], reverse=True
     )
-    for elem in list_of_grouped_orders:
+    second_list_of_grouped_orders = sorted(
+        second_half_orders,
+        key=lambda x: datetime.datetime.fromisoformat(x["orders"][0].createdAt),
+        reverse=False
+    )
+    for elem in first_list_of_grouped_orders:
+        list_of_orders += elem.get("orders")
+    for elem in second_list_of_grouped_orders:
         list_of_orders += elem.get("orders")
     res = list_of_orders[0:limit]
     return res
