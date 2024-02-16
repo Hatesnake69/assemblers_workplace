@@ -1,19 +1,17 @@
 from django.db import models
 
 
-class WbBusinessAccountModel(models.Model):
+class BusinessAccountModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
     name = models.CharField(max_length=128)
-    wb_token = models.TextField()
-
-    # wb_account_warehouses = models.ManyToManyField(
-    #     "app.WbWarehouseModel", related_name="wb_business_accounts", blank=True
-    # )
+    wb_token = models.TextField(null=True)
+    ozon_client_id = models.TextField(null=True)
+    ozon_api_token = models.TextField(null=True)
 
     class Meta:
         # Указывает имя таблицы в базе данных
-        db_table = "wb_business_accounts"
+        db_table = "business_accounts"
 
     def __str__(self):
         return self.name

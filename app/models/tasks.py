@@ -23,10 +23,10 @@ class TaskModel(models.Model):
         default=1, verbose_name="Количество",
     )
     business_account = models.ForeignKey(
-        "app.WbBusinessAccountModel", on_delete=models.CASCADE, verbose_name="Аккаунт",
+        "app.BusinessAccountModel", on_delete=models.CASCADE, verbose_name="Аккаунт",
     )
     warehouse = models.ForeignKey(
-        "app.WbWarehouseModel", on_delete=models.CASCADE, verbose_name="Склад",
+        "app.WarehouseModel", on_delete=models.CASCADE, verbose_name="Склад",
     )
     created_at = models.DateTimeField(
         auto_created=True, auto_now_add=True
