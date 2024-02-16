@@ -5,7 +5,7 @@ class WbSupplyModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
     task = models.ForeignKey(
-        "app.TaskModel", on_delete=models.CASCADE, null=True, blank=True
+        "app.WbTaskModel", on_delete=models.CASCADE, null=True, blank=True
     )
 
     wb_id = models.CharField(max_length=128, unique=True)
@@ -16,7 +16,6 @@ class WbSupplyModel(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     svg_file = models.TextField(null=True, blank=True)
 
-    # Определите связь с моделью WbOrderModel
     wb_orders = models.ManyToManyField(
         "app.WbOrderModel", related_name="wb_supply", blank=True
     )

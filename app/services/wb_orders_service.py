@@ -1,7 +1,7 @@
 import datetime
 import json
 
-from app.models import WbSupplyModel, TaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
+from app.models import WbSupplyModel, WbTaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
 from app.schemas.order_schemas import (
     OrdersResponseFromWb,
     MappingResponse,
@@ -21,7 +21,7 @@ class WbOrdersService:
         self.warehouse_id = warehouse_id
         self.request_api = RequestAPI()
 
-    def create_new_supply(self, name: str, task: TaskModel) -> WbSupplyModel:
+    def create_new_supply(self, name: str, task: WbTaskModel) -> WbSupplyModel:
         new_supply_resp = self.request_api.post(
             url=settings.post_wb_new_supply_url,
             params={},

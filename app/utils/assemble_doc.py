@@ -3,11 +3,11 @@ import re
 
 import weasyprint
 
-from app.models import TaskModel, WbSupplyModel, WbOrderModel, WbOrderProductModel
+from app.models import WbTaskModel, WbSupplyModel, WbOrderModel, WbOrderProductModel
 from app.schemas.order_schemas import AssembleProductSchema, AssembleDocSchema
 
 
-def create_assemble_doc(task_instance: TaskModel, supply_instance: WbSupplyModel):
+def create_assemble_doc(task_instance: WbTaskModel, supply_instance: WbSupplyModel):
     row_headers = (
         "№",
         "Наименование товара",

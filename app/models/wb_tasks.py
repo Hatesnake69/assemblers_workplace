@@ -13,7 +13,7 @@ class Status(models.Choices):
     CLOSE = "CLOSE"
 
 
-class TaskModel(models.Model):
+class WbTaskModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
     employee = models.ForeignKey(
@@ -57,9 +57,9 @@ class TaskModel(models.Model):
 
     class Meta:
         # Указывает имя таблицы в базе данных
-        db_table = "tasks"
-        verbose_name = "Сборочное задание"  # Название модели в единственном числе
-        verbose_name_plural = "Сборочные задания"  # Название модели во множественном числе
+        db_table = "wb_tasks"
+        verbose_name = "Сборочное задание WB"  # Название модели в единственном числе
+        verbose_name_plural = "Сборочные задания WB"  # Название модели во множественном числе
 
     def __str__(self):
         return f"{self.employee} {self.created_at.astimezone(settings.timezone).strftime('%Y-%m-%d %H:%M')}"
