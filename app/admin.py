@@ -10,7 +10,7 @@ from .models import (
     AllowedIpModel,
     EmployeeModel,
     FailedNmIdProductModel,
-    WbBusinessAccountModel
+    BusinessAccountModel
 )
 
 
@@ -113,8 +113,8 @@ class WbSupplyModelAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(WbBusinessAccountModel)
-class WbBusinessAccountModelAdmin(admin.ModelAdmin):
+@admin.register(BusinessAccountModel)
+class BusinessAccountModelAdmin(admin.ModelAdmin):
     list_display = (
         "name",
     )

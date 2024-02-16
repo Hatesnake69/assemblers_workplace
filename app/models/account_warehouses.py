@@ -1,22 +1,23 @@
 from django.db import models
-from app.models.wb_business_accounts import WbBusinessAccountModel
+from app.models.business_accounts import BusinessAccountModel
 
 
-class WbAccountWarehouseModel(models.Model):
+class AccountWarehouseModel(models.Model):
     objects = models.Manager()  # Add the default manager
 
-    wb_id = models.PositiveIntegerField()
+    wb_id = models.PositiveIntegerField(null=True)
+    ozon_id = models.PositiveIntegerField(null=True)
 
     warehouse = models.ForeignKey(
-        "app.WbWarehouseModel",
-        related_name="wb_account_warehouses",
+        "app.WarehouseModel",
+        related_name="account_warehouses",
         blank=True,
         on_delete=models.CASCADE,
     )
     business_account = models.ForeignKey(
-        WbBusinessAccountModel,
+        BusinessAccountModel,
         on_delete=models.CASCADE,
-        related_name="wb_account_warehouses",
+        related_name="account_warehouses",
     )
     processing_flag = models.BooleanField(
         default=False
@@ -24,7 +25,7 @@ class WbAccountWarehouseModel(models.Model):
 
     class Meta:
         # Указывает имя таблицы в базе данных
-        db_table = "wb_account_warehouses"
+        db_table = "account_warehouses"
 
     def __str__(self):
         return f"{self.business_account}, {self.warehouse}"
