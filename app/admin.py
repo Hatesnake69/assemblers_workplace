@@ -6,7 +6,7 @@ from .models import (
     WbSupplyModel,
     WbOrderModel,
     WbOrderProductModel,
-    TaskModel,
+    WbTaskModel,
     AllowedIpModel,
     EmployeeModel,
     FailedNmIdProductModel,
@@ -21,8 +21,8 @@ class EmployeeModelAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(TaskModel)
-class TaskModelAdmin(admin.ModelAdmin):
+@admin.register(WbTaskModel)
+class WbTaskModelAdmin(admin.ModelAdmin):
     list_display = (
         "employee",
         "amount",

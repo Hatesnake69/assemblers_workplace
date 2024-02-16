@@ -4,8 +4,8 @@ from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import TaskModel, WbSupplyModel, WbOrderModel
-from .models.tasks import Status
+from .models import WbTaskModel, WbSupplyModel, WbOrderModel
+from .models.wb_tasks import Status
 from .models.account_warehouses import AccountWarehouseModel
 from .services.wb_orders_service import WbOrdersService
 from .utils.assemble_doc import create_assemble_doc
@@ -17,8 +17,8 @@ from .utils.file_service import (
 from .utils.package_doc import create_package_doc
 
 
-@receiver(post_save, sender=TaskModel)
-def create_task(sender, instance: TaskModel, created, **kwargs):
+@receiver(post_save, sender=WbTaskModel)
+def create_task(sender, instance: WbTaskModel, created, **kwargs):
     amount = instance.amount
     current_account = instance.business_account
     account_warehouse: AccountWarehouseModel = AccountWarehouseModel.objects.get(
