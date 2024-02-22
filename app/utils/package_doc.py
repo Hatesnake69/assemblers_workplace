@@ -33,7 +33,11 @@ def create_package_doc(task_instance, supply_instance):
     for header in row_headers:
         table += f"<th>{header}</th>"
     table += "</tr>"
-    for order in WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all():
+    orders: list[WbOrderModel] = WbOrderModel.objects.filter(supply=supply_instance).order_by('id').all()
+    orders_sorted = sorted(
+        orders, key=lambda order: order.order_products.first().storage_location if order.order_products.exists() else ''
+    )
+    for order in orders_sorted:
         table += fill_order_row(
             order=order
         )
