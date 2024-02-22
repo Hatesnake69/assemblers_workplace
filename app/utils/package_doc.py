@@ -40,7 +40,7 @@ def create_package_doc(task_instance, supply_instance):
     prev: WbOrderModel = None
     for order in orders_sorted:
         if prev and prev.wb_nm_id != order.wb_nm_id:
-            table += '<tr style="height: 50px;"></tr>'
+            table += '<tr><td></td></tr>'
         table += fill_order_row(
             order=order
         )
