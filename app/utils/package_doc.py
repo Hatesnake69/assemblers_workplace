@@ -37,10 +37,14 @@ def create_package_doc(task_instance, supply_instance):
     orders_sorted = sorted(
         orders, key=lambda order: order.order_products.first().storage_location if order.order_products.exists() else ''
     )
+    prev: WbOrderModel = None
     for order in orders_sorted:
+        if prev and prev.wb_nm_id != order.wb_nm_id:
+            table += "<tr></tr>"
         table += fill_order_row(
             order=order
         )
+        prev = order
     table += "</table>"
 
     html_template = f"""
