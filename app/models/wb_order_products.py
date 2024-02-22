@@ -4,7 +4,7 @@ from django.db import models
 class WbOrderProductModel(models.Model):
     objects = models.Manager()
 
-    order = models.ForeignKey("app.WbOrderModel", on_delete=models.CASCADE, related_name="order_products")
+    order = models.ForeignKey("app.WbOrderModel", on_delete=models.CASCADE)
 
     name = models.TextField(null=True, blank=True)
     quantity = models.IntegerField()
