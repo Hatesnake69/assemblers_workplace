@@ -16,10 +16,6 @@ class WbSupplyModel(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     svg_file = models.TextField(null=True, blank=True)
 
-    wb_orders = models.ManyToManyField(
-        "app.WbOrderModel", related_name="wb_supply", blank=True
-    )
-
     class Meta:
         # Указывает имя таблицы в базе данных
         db_table = "wb_supplies"

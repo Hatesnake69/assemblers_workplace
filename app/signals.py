@@ -56,10 +56,48 @@ def create_task(sender, instance: WbTaskModel, created, **kwargs):
         instance.save()
         print("orders added to supply")
         supply = WbSupplyModel.objects.get(task=instance)
-        wb_order_service.send_supply_to_deliver(supply=supply)
+        try:
+            wb_order_service.send_supply_to_deliver(supply=supply)
+        except:
+            return
         instance.task_state = Status.SEND_SUPPLY_TO_DELIVER
         instance.save()
         print("orders stickers received")
+        supply = WbSupplyModel.objects.get(task=instance)
+        try:
+            wb_order_service.get_supply_sticker(supply=supply)
+        except:
+            return
+        instance.task_state = Status.GET_SUPPLY_STICKER
+        instance.save()
+        assembler_document_pdf = create_assemble_doc(
+            task_instance=instance, supply_instance=supply
+        )
+        instance.assembler_document.save(
+            f"{instance.id}_assemble_document.pdf", ContentFile(assembler_document_pdf.read())
+        )
+        package_document_pdf = create_package_doc(
+            task_instance=instance, supply_instance=supply
+        )
+        instance.package_document.save(
+            f"{instance.id}_package_document.pdf", ContentFile(package_document_pdf.read())
+        )
+        qr_pdf = create_wb_orders_qr_pdf(task_instance=instance)
+        instance.wb_order_qr_document.save(
+            f"{instance.id}_qr_stickers.pdf", ContentFile(qr_pdf.read())
+        )
+        supply_qr = create_wb_supply_qr_pdf(task_instance=instance)
+        instance.wb_supply_qr_document.save(
+            f"{instance.id}_supply_qr.pdf", ContentFile(supply_qr.read())
+        )
+        barcodes_pdf = create_stickers_pdf(task_instance=instance)
+        instance.wb_order_stickers_document.save(
+            f"{instance.id}_sku_stickers_qr.pdf", ContentFile(barcodes_pdf.read())
+        )
+        instance.save()
+        print("supply sent")
+
+    if instance.task_state == Status.GET_ORDERS_STICKERS.value:
         supply = WbSupplyModel.objects.get(task=instance)
         try:
             wb_order_service.get_supply_sticker(supply=supply)

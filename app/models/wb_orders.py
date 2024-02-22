@@ -8,11 +8,6 @@ class WbOrderModel(models.Model):
         "app.WbSupplyModel", on_delete=models.CASCADE, null=True, blank=True
     )
 
-    order_products = models.ManyToManyField(
-        "app.WbOrderProductModel",
-        related_name="orders",
-        blank=True,
-    )
     is_bundle = models.BooleanField(default=False)
     packaging_class = models.TextField(null=True, blank=True)
 
