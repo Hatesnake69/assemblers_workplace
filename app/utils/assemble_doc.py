@@ -4,7 +4,7 @@ import re
 import weasyprint
 
 from app.models import WbTaskModel, WbSupplyModel, WbOrderModel, WbOrderProductModel
-from app.schemas.order_schemas import AssembleProductSchema, AssembleDocSchema
+from app.schemas.wb_order_schemas import AssembleProductSchema, AssembleDocSchema
 
 
 def create_assemble_doc(task_instance: WbTaskModel, supply_instance: WbSupplyModel):

@@ -2,7 +2,7 @@ import datetime
 import json
 
 from app.models import WbSupplyModel, WbTaskModel, WbOrderModel, WbOrderProductModel, FailedNmIdProductModel
-from app.schemas.order_schemas import (
+from app.schemas.wb_order_schemas import (
     OrdersResponseFromWb,
     MappingResponse,
     ProductParamsFromMs,

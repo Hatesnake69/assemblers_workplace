@@ -1,6 +1,6 @@
 import datetime
 
-from app.schemas.order_schemas import OrdersResponseFromWb, OrderFromWb
+from app.schemas.wb_order_schemas import OrdersResponseFromWb, OrderFromWb
 from assemblers_workplace.settings import settings
 
 map_of_intervals = {

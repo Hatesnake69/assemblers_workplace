@@ -4,17 +4,17 @@ from django.core.files.base import ContentFile
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .models import WbTaskModel, WbSupplyModel, WbOrderModel
-from .models.wb_tasks import Status
-from .models.account_warehouses import AccountWarehouseModel
-from .services.wb_orders_service import WbOrdersService
-from .utils.assemble_doc import create_assemble_doc
-from .utils.file_service import (
+from app.models import WbTaskModel, WbSupplyModel, WbOrderModel
+from app.models.wb.wb_tasks import Status
+from app.models.account_warehouses import AccountWarehouseModel
+from app.services.wb_orders_service import WbOrdersService
+from app.utils.assemble_doc import create_assemble_doc
+from app.utils.file_service import (
     create_wb_orders_qr_pdf,
     create_stickers_pdf,
     create_wb_supply_qr_pdf,
 )
-from .utils.package_doc import create_package_doc
+from app.utils.package_doc import create_package_doc
 
 
 @receiver(post_save, sender=WbTaskModel)
