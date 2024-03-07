@@ -31,6 +31,16 @@ services:
     networks:
       my_api_network:
 
+  pytest_runner:
+    build:
+      context: .
+    command: pytest tests
+    depends_on:
+      - assemblers_db
+      - assemblers_app
+    networks:
+        my_api_network:
+
 
 networks:
   my_api_network:
