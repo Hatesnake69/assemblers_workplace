@@ -17,9 +17,9 @@ def assert_task_fields(mock_wb_task: WbTaskModel):
     assert mock_wb_task.wb_order_stickers_document
 
 
-def generate_orders() -> OrdersResponseFromWb:
+def generate_orders(amount: int) -> OrdersResponseFromWb:
     orders: OrdersResponseFromWb = OrdersResponseFromWb(orders=[])
-    for i in range(10):
+    for i in range(amount):
         orders.orders.append(
             OrderFromWb(
                 id=i + 1,

@@ -6,6 +6,7 @@ import requests_mock
 
 from app.models import WarehouseModel, BusinessAccountModel, EmployeeModel, WbTaskModel
 from app.models.account_warehouses import AccountWarehouseModel
+from app.services.wb_orders_service import WbOrdersService
 from assemblers_workplace.settings import settings
 
 
@@ -34,6 +35,11 @@ def mock_wb_task(mock_wb_api):
         warehouse=warehouse,
     )
     return task
+
+
+@pytest.fixture
+def wb_orders_service(mock_wb_api):
+    return WbOrdersService(wb_token="token", amount=10, warehouse_id=1)
 
 
 @pytest.fixture
